@@ -45,6 +45,7 @@ Standalone scripts for Claude automation patterns.
 | Script | Description |
 |--------|-------------|
 | [auto-refresher.sh](techniques/auto-refresher.sh) | Claude 세션을 5시간 간격으로 자동 keep-alive |
+| [configure-attribution.sh](techniques/configure-attribution.sh) | Claude co-author attribution 문구를 user/project 범위로 패치 |
 
 ## Conventions
 
