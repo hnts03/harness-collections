@@ -27,6 +27,7 @@ Then invoke it in Claude Code with `/<skill-name>`.
 
 | Skill | Description | Invoke |
 |-------|-------------|--------|
+| [commit](claude-skills/commit/) | 코드 스타일 검사·수정 후 co-author 없이 커밋 | `/commit` |
 | [telegram-channel-setup](claude-skills/telegram-channel-setup/) | Telegram 봇과 Claude Code channels 연동을 end-to-end로 자동화 | `/telegram-channel-setup` |
 
 ## Collections
