@@ -10,7 +10,7 @@ This is a collection of reusable Claude Code harness assets: skills, techniques,
 
 - `claude-skills/` — Claude skill definitions. Treat this directory as the equivalent of `.claude/skills/`. Each subdirectory is a standalone skill.
 - `collections/` — Curated bundles of related skills or configurations for specific use cases.
-- `techniques/` — Standalone scripts and patterns for Claude automation (e.g., session keep-alive loops).
+- `scripts/` — Standalone scripts and patterns for Claude automation (e.g., session keep-alive loops).
 
 ## Skill Authoring Convention
 

@@ -9,7 +9,7 @@ Each asset is designed to be dropped into any project and used immediately with 
 harness-collections/
 ├── claude-skills/       # Drop-in .claude/skills/ directories
 ├── collections/         # Curated bundles of skills for specific use cases
-├── techniques/          # Standalone scripts and automation patterns
+├── scripts/             # Standalone scripts and automation patterns
 └── claude-agents/       # Custom agent definitions
 ```
 
@@ -38,14 +38,14 @@ Then invoke it in Claude Code with `/<skill-name>`.
 | [harness-framework](collections/harness-framework/) | 배포·운영 중인 harness 프레임워크 비교 (paperclip, gitagent, harness) |
 | [skills](collections/skills/) | 외부 제작 skill 컬렉션 레퍼런스 (harness-100 등) |
 
-## Techniques
+## Scripts
 
 Standalone scripts for Claude automation patterns.
 
 | Script | Description |
 |--------|-------------|
-| [auto-refresher.sh](techniques/auto-refresher.sh) | Claude 세션을 5시간 간격으로 자동 keep-alive |
-| [configure-attribution.sh](techniques/configure-attribution.sh) | Claude co-author attribution 문구를 user/project 범위로 패치 |
+| [auto-refresher.sh](scripts/auto-refresher.sh) | Claude 세션을 5시간 간격으로 자동 keep-alive |
+| [configure-attribution.sh](scripts/configure-attribution.sh) | Claude co-author attribution 문구를 user/project 범위로 패치 |
 
 ## Conventions
 
