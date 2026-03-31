@@ -18,5 +18,8 @@
 node_modules/
 bun.lockb
 
-# Claude Code local state (never commit session state or local overrides)
-.claude/
+# Claude Code local state (session state, local overrides 등은 커밋하지 않음)
+# skills/와 agents/는 harness symlink이므로 추적
+.claude/*
+!.claude/skills/
+!.claude/agents/
