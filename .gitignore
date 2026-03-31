@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Node / Bun
+node_modules/
+bun.lockb
+
+# Claude Code local state (never commit session state or local overrides)
+.claude/settings.local.json
