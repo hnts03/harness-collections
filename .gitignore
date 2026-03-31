@@ -19,4 +19,4 @@ node_modules/
 bun.lockb
 
 # Claude Code local state (never commit session state or local overrides)
-.claude/settings.local.json
+.claude/
