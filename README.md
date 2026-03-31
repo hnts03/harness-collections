@@ -29,6 +29,15 @@ Then invoke it in Claude Code with `/<skill-name>`.
 |-------|-------------|--------|
 | [telegram-channel-setup](claude-skills/telegram-channel-setup/) | Telegram 봇과 Claude Code channels 연동을 end-to-end로 자동화 | `/telegram-channel-setup` |
 
+## Collections
+
+도메인별 큐레이션된 레퍼런스 및 외부 리소스 모음.
+
+| Collection | Description |
+|------------|-------------|
+| [harness-framework](collections/harness-framework/) | 배포·운영 중인 harness 프레임워크 비교 (paperclip, gitagent, harness) |
+| [skills](collections/skills/) | 외부 제작 skill 컬렉션 레퍼런스 (harness-100 등) |
+
 ## Techniques
 
 Standalone scripts for Claude automation patterns.
