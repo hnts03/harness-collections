@@ -67,12 +67,58 @@ The `project-manager` skill drives a layered multi-agent system:
 
 See [claude-agents/project-manager/SPEC.md](claude-agents/project-manager/SPEC.md) for the full architecture spec.
 
+## Installation
+
+### Recommended: symlink install (stays in sync with updates)
+
+`install-harness.sh` creates absolute-path symlinks from any project into this repo. Running `git pull` on harness-collections immediately reflects in all linked projects.
+
+```bash
+# From your project root
+bash /path/to/harness-collections/scripts/install-harness.sh
+
+# Also update .gitignore automatically
+bash /path/to/harness-collections/scripts/install-harness.sh --gitignore
+
+# Preview without making changes
+bash /path/to/harness-collections/scripts/install-harness.sh --dry-run
+
+# Overwrite existing symlinks
+bash /path/to/harness-collections/scripts/install-harness.sh --force
+```
+
+After install, your project will have:
+
+```
+.claude/
+├── skills/
+│   ├── commit              -> .../harness-collections/claude-skills/commit/
+│   ├── project-manager     -> .../harness-collections/claude-skills/project-manager/
+│   └── telegram-channel-setup -> ...
+└── agents/
+    ├── worker.md           -> .../harness-collections/claude-agents/worker/AGENT.md
+    ├── reviewer.md         -> ...
+    ├── qa.md               -> ...
+    └── tech-writer.md      -> ...
+```
+
+### Alternative: copy individual assets
+
+```bash
+# Single skill
+cp -r claude-skills/<skill-name> /your/project/.claude/skills/
+
+# Single agent
+cp claude-agents/<agent-name>/AGENT.md /your/project/.claude/agents/<agent-name>.md
+```
+
 ## Scripts
 
 Standalone scripts for Claude automation patterns.
 
 | Script | Description |
 |--------|-------------|
+| [install-harness.sh](scripts/install-harness.sh) | Symlink-install all skills and agents into any project (`--force`, `--dry-run`, `--gitignore`) |
 | [auto-refresher.sh](scripts/auto-refresher.sh) | Keep-alive loop that refreshes Claude sessions every 5 hours |
 | [configure-attribution.sh](scripts/configure-attribution.sh) | Patch Claude co-author attribution strings at user or project scope |
 
