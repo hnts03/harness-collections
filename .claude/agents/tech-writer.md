@@ -1,0 +1,1 @@
+../../claude-agents/tech-writer/AGENT.md

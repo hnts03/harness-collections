@@ -1,0 +1,1 @@
+../../claude-agents/architect/AGENT.md

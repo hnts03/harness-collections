@@ -22,18 +22,18 @@ You have been given a `group_id` and a path to `project-plan.md` in the Context 
 
 Worker 프롬프트를 로드한다:
 ```bash
-cat .claude/agents/worker/AGENT.md 2>/dev/null || echo "WORKER_AGENT_NOT_FOUND"
+cat .claude/agents/worker.md 2>/dev/null || echo "WORKER_AGENT_NOT_FOUND"
 ```
 
 Reviewer 프롬프트를 로드한다:
 ```bash
-cat .claude/agents/reviewer/AGENT.md 2>/dev/null || echo "REVIEWER_AGENT_NOT_FOUND"
+cat .claude/agents/reviewer.md 2>/dev/null || echo "REVIEWER_AGENT_NOT_FOUND"
 ```
 
 둘 중 하나라도 `NOT_FOUND`면 즉시 실패를 반환한다:
 ```
 status: failed
-reason: .claude/agents/worker/AGENT.md 또는 .claude/agents/reviewer/AGENT.md 파일이 없습니다.
+reason: .claude/agents/worker.md 또는 .claude/agents/reviewer.md 파일이 없습니다.
 ```
 
 ---
@@ -51,7 +51,7 @@ Tasks를 분석하여 실행 배치를 구성한다:
 ### Worker 스폰 방법
 
 각 task에 대해 Agent tool을 호출한다. prompt는 다음을 합쳐서 전달한다:
-1. `.claude/agents/worker/AGENT.md`의 전체 내용
+1. `.claude/agents/worker.md`의 전체 내용
 2. 아래 Task Context 블록:
 
 ```
@@ -104,7 +104,7 @@ Tasks를 분석하여 실행 배치를 구성한다:
 ```
 
 Agent tool로 Reviewer를 스폰한다. prompt는 다음을 합쳐서 전달한다:
-1. `.claude/agents/reviewer/AGENT.md`의 전체 내용
+1. `.claude/agents/reviewer.md`의 전체 내용
 2. 아래 Review Context 블록:
 
 ```

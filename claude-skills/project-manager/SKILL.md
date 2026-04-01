@@ -109,12 +109,12 @@ N/A
 **실행 전 Architect 프롬프트 로드:**
 
 ```bash
-cat .claude/agents/architect/AGENT.md 2>/dev/null || echo "AGENT_NOT_FOUND"
+cat .claude/agents/architect.md 2>/dev/null || echo "AGENT_NOT_FOUND"
 ```
 
 출력이 `AGENT_NOT_FOUND`이면 사용자에게 아래를 안내하고 중단한다:
-> `.claude/agents/architect/AGENT.md` 파일이 없습니다.
-> `claude-agents/architect/AGENT.md`를 `.claude/agents/architect/AGENT.md` 경로에 복사해주세요.
+> `.claude/agents/architect.md` 파일이 없습니다.
+> `claude-agents/architect/AGENT.md`를 `.claude/agents/architect.md` 경로에 복사해주세요.
 
 **Group 실행 순서 결정:**
 - `depends_on: []`인 Group은 동시에 실행한다 (Agent tool 병렬 호출).
@@ -123,7 +123,7 @@ cat .claude/agents/architect/AGENT.md 2>/dev/null || echo "AGENT_NOT_FOUND"
 **각 Architect 스폰 방법:**
 
 Agent tool을 사용하여 Architect를 스폰한다. prompt는 다음을 합쳐서 전달한다:
-1. `.claude/agents/architect/AGENT.md`의 전체 내용
+1. `.claude/agents/architect.md`의 전체 내용
 2. 아래 Context 블록:
 
 ```
@@ -161,11 +161,11 @@ Agent tool을 사용하여 Architect를 스폰한다. prompt는 다음을 합쳐
 모든 Group이 완료되면 QA를 시작한다.
 
 ```bash
-cat .claude/agents/qa/AGENT.md 2>/dev/null || echo "AGENT_NOT_FOUND"
+cat .claude/agents/qa.md 2>/dev/null || echo "AGENT_NOT_FOUND"
 ```
 
 Agent tool로 QA를 스폰한다. prompt는 다음을 합쳐서 전달한다:
-1. `.claude/agents/qa/AGENT.md`의 전체 내용
+1. `.claude/agents/qa.md`의 전체 내용
 2. 아래 Context 블록:
 
 ```
@@ -184,11 +184,11 @@ QA가 `qa-report.md`를 생성하고 완료를 반환하면 PHASE 5로 진행한
 ## PHASE 5 — TechWriter 오케스트레이션
 
 ```bash
-cat .claude/agents/tech-writer/AGENT.md 2>/dev/null || echo "AGENT_NOT_FOUND"
+cat .claude/agents/tech-writer.md 2>/dev/null || echo "AGENT_NOT_FOUND"
 ```
 
 Agent tool로 TechWriter를 스폰한다. prompt는 다음을 합쳐서 전달한다:
-1. `.claude/agents/tech-writer/AGENT.md`의 전체 내용
+1. `.claude/agents/tech-writer.md`의 전체 내용
 2. 아래 Context 블록:
 
 ```

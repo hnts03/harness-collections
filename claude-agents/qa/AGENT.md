@@ -72,11 +72,11 @@ npm test 2>/dev/null || make test 2>/dev/null || pytest 2>/dev/null || go test .
 복잡한 테스트 코드 작성이 필요하면 Worker 에이전트에게 위임한다.
 
 ```bash
-cat .claude/agents/worker/AGENT.md 2>/dev/null || echo "WORKER_AGENT_NOT_FOUND"
+cat .claude/agents/worker.md 2>/dev/null || echo "WORKER_AGENT_NOT_FOUND"
 ```
 
 Agent tool로 Worker를 스폰한다. prompt는 다음을 합쳐서 전달한다:
-1. `.claude/agents/worker/AGENT.md`의 전체 내용
+1. `.claude/agents/worker.md`의 전체 내용
 2. 아래 Worker Task Context:
 
 ```
