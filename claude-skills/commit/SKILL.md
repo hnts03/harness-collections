@@ -10,6 +10,35 @@ Do NOT append `Co-Authored-By`, `🤖 Generated with`, or any AI attribution lin
 
 ---
 
+## PHASE 0 — 필수 도구 확인
+
+```bash
+# git 설치 확인
+command -v git &>/dev/null && echo "git: ok" || echo "git: MISSING"
+
+# gh CLI 설치 확인
+command -v gh &>/dev/null && echo "gh: ok" || echo "gh: MISSING"
+
+# gh 인증 상태 확인 (gh가 있을 때만)
+command -v gh &>/dev/null && gh auth status 2>&1 || true
+```
+
+결과에 따라 처리한다:
+
+- **`git` 없음**: 커밋을 진행할 수 없다. 사용자에게 git 설치를 요청하고 중단한다.
+- **`gh` 없음**: 사용자에게 아래 명령으로 설치를 안내하고 설치 완료 후 재시도를 요청한다.
+  ```bash
+  brew install gh
+  ```
+- **`gh auth status` 미인증**: 사용자에게 아래 명령으로 인증을 요청하고 완료 후 재시도를 요청한다.
+  ```
+  gh auth login
+  ```
+
+모든 확인이 통과하면 조용히 PHASE 1로 진행한다.
+
+---
+
 ## PHASE 1 — Repo style requirements 탐지
 
 Run the following to discover what style tooling this repo uses:
