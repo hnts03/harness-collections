@@ -69,15 +69,18 @@ See [claude-agents/project-manager/SPEC.md](claude-agents/project-manager/SPEC.m
 
 ## Installation
 
-### Recommended: symlink install (stays in sync with updates)
+### Recommended: worktree-based install
 
-`install-harness.sh` creates absolute-path symlinks from any project into this repo. Running `git pull` on harness-collections immediately reflects in all linked projects.
+`install-harness.sh` creates a dedicated git branch and worktree for each project, then symlinks your `.claude/` to that worktree. This lets you customize the harness per project while still pulling upstream changes from `main`.
 
 ```bash
+# Clone harness-collections once
+git clone https://github.com/hnts03/harness-collections
+
 # From your project root
 bash /path/to/harness-collections/scripts/install-harness.sh
 
-# Also update .gitignore automatically
+# Also patch .gitignore automatically
 bash /path/to/harness-collections/scripts/install-harness.sh --gitignore
 
 # Preview without making changes
@@ -87,19 +90,37 @@ bash /path/to/harness-collections/scripts/install-harness.sh --dry-run
 bash /path/to/harness-collections/scripts/install-harness.sh --force
 ```
 
-After install, your project will have:
+What happens under the hood:
+
+1. Creates a branch named after your project (`<project-name>`)
+2. Checks it out as a worktree at `harness-collections/worktrees/<project-name>/`
+3. Creates symlinks in your project's `.claude/` pointing to that worktree
 
 ```
-.claude/
+harness-collections/
+└── worktrees/
+    └── my-project/           ← git worktree (branch: my-project)
+        ├── claude-skills/
+        └── claude-agents/
+
+my-project/.claude/
 ├── skills/
-│   ├── commit              -> .../harness-collections/claude-skills/commit/
-│   ├── project-manager     -> .../harness-collections/claude-skills/project-manager/
-│   └── telegram-channel-setup -> ...
+│   ├── commit            ->  worktrees/my-project/claude-skills/commit/
+│   ├── project-manager   ->  worktrees/my-project/claude-skills/project-manager/
+│   └── ...
 └── agents/
-    ├── worker.md           -> .../harness-collections/claude-agents/worker/AGENT.md
-    ├── reviewer.md         -> ...
-    ├── qa.md               -> ...
-    └── tech-writer.md      -> ...
+    ├── worker.md         ->  worktrees/my-project/claude-agents/worker/AGENT.md
+    ├── reviewer.md       ->  ...
+    └── ...
+```
+
+**Customize per project** — edit files inside `worktrees/<project-name>/` on the project branch.
+
+**Pull upstream updates** — merge `main` into your project branch when ready:
+
+```bash
+cd /path/to/harness-collections/worktrees/<project-name>
+git merge main
 ```
 
 ### Alternative: copy individual assets
@@ -118,7 +139,7 @@ Standalone scripts for Claude automation patterns.
 
 | Script | Description |
 |--------|-------------|
-| [install-harness.sh](scripts/install-harness.sh) | Symlink-install all skills and agents into any project (`--force`, `--dry-run`, `--gitignore`) |
+| [install-harness.sh](scripts/install-harness.sh) | Create a per-project branch + git worktree and symlink skills/agents into `.claude/` (`--force`, `--dry-run`, `--gitignore`) |
 | [auto-refresher.sh](scripts/auto-refresher.sh) | Keep-alive loop that refreshes Claude sessions every 5 hours |
 | [configure-attribution.sh](scripts/configure-attribution.sh) | Patch Claude co-author attribution strings at user or project scope |
 
