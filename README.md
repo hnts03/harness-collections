@@ -45,9 +45,8 @@ cp -r claude-agents/<agent-name> /your/project/.claude/agents/
 
 | Agent | Description | Spawned by |
 |-------|-------------|------------|
-| [architect](claude-agents/architect/) | Manages a Feature Group — orchestrates Workers and Reviewer, commits on completion | PM |
-| [worker](claude-agents/worker/) | Executes a single atomic task; reports what/how/why on failure | Architect, QA |
-| [reviewer](claude-agents/reviewer/) | Critically reviews group implementation; returns `OK` or `REWORK` with a quality score | Architect |
+| [worker](claude-agents/worker/) | Executes a single atomic task; reports what/how/why on failure | PM |
+| [reviewer](claude-agents/reviewer/) | Critically reviews group implementation; returns `OK` or `REWORK` with a quality score | PM |
 | [qa](claude-agents/qa/) | Plans and runs integration tests after all groups complete; writes `qa-report.md` | PM |
 | [tech-writer](claude-agents/tech-writer/) | Consolidates all artifacts into `final-report.md` | PM |
 
@@ -57,18 +56,14 @@ The `project-manager` skill drives a layered multi-agent system:
 
 ```
 /project-manager (skill)
-└── PM
-    ├── Architect-A  (Feature Group)
-    │   ├── Worker × N  (atomic tasks, parallel where possible)
-    │   └── Reviewer    (OK / REWORK, up to 5 rounds)
-    ├── Architect-B  (parallel if no dependency)
-    │   └── ...
+└── PM  ←─ orchestrates everything directly (flat, per Claude Code sub-agent constraints)
+    ├── Worker × N  (atomic tasks per group, parallel where possible)
+    ├── Reviewer    (per group, OK / REWORK + quality score, up to 5 rounds)
     ├── QA
-    │   └── Worker      (test code, if needed)
     └── TechWriter
 ```
 
-**Orchestration model:** PM and Architect manage state via `project-plan.md` (file-based, persistent). Workers, Reviewers, QA, and TechWriter are spawned ephemerally via the `Agent` tool.
+**Orchestration model:** PM manages state via `project-plan.md` (file-based, persistent). Workers, Reviewer, QA, and TechWriter are leaf sub-agents spawned directly by PM via the `Agent` tool. Sub-agents cannot spawn other sub-agents per Claude Code constraints.
 
 See [claude-agents/project-manager/SPEC.md](claude-agents/project-manager/SPEC.md) for the full architecture spec.
 

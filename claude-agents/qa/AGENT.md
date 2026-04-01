@@ -65,44 +65,13 @@ npm test 2>/dev/null || make test 2>/dev/null || pytest 2>/dev/null || go test .
 
 ## STEP 4 — 추가 테스트 구현 (필요 시)
 
-테스트 계획 중 기존 테스트로 커버되지 않는 항목이 있으면 테스트를 추가로 작성한다.
+테스트 계획 중 기존 테스트로 커버되지 않는 항목이 있으면 **QA가 직접** 테스트 코드를 작성한다.
 
-**Worker를 사용하는 경우:**
+**참고:** sub-agent는 다른 sub-agent를 호출할 수 없으므로 QA가 Worker를 스폰하지 않고 직접 구현한다.
 
-복잡한 테스트 코드 작성이 필요하면 Worker 에이전트에게 위임한다.
-
-```bash
-cat .claude/agents/worker.md 2>/dev/null || echo "WORKER_AGENT_NOT_FOUND"
-```
-
-Agent tool로 Worker를 스폰한다. prompt는 다음을 합쳐서 전달한다:
-1. `.claude/agents/worker.md`의 전체 내용
-2. 아래 Worker Task Context:
-
-```
----
-## Worker Task Context
-
-- **task_id**: qa-test-{N}
-- **title**: {테스트 파일 이름 또는 테스트 대상}
-- **description**: {무엇을 테스트하는 코드를 작성해야 하는지}
-- **inputs**:
-  - files: {테스트 대상 파일 목록}
-  - context: {테스트에 필요한 추가 정보}
-- **outputs**:
-  - files: {생성할 테스트 파일 경로}
-- **acceptance_criteria**:
-  - 테스트 파일이 에러 없이 실행됨
-  - {각 테스트 케이스가 의도한 동작을 검증함}
-- **attempt**: 1
-- **previous_failures**: 없음
-```
-
-Worker 완료 후 테스트를 실행한다.
-
-**직접 작성하는 경우:**
-
-간단한 스크립트나 단일 파일 테스트는 직접 Write/Edit tool로 작성하고 실행한다.
+Write/Edit tool로 테스트 파일을 작성하고 실행한다:
+- 단순 스크립트: Bash로 직접 작성·실행
+- 테스트 프레임워크 파일: Write tool로 생성 후 실행
 
 ---
 

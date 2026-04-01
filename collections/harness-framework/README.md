@@ -116,13 +116,24 @@ my-agent/
 
 도메인을 분석하고, agent 팀 구조를 설계하고, 각 agent가 사용할 skill을 생성하는 meta-skill. Claude Code marketplace에서 설치하면 `/harness` 하나로 전체 agent 시스템 설계가 자동화된다.
 
+### 연구 성과
+
+15개 소프트웨어 엔지니어링 시나리오 실험 기반:
+
+| 지표 | harness 없음 | harness 적용 | 개선 |
+|------|-------------|-------------|------|
+| 평균 품질 점수 | 49.5 | 79.3 | **+60%** |
+| 태스크 성공률 | — | 100% | — |
+
+관련 연구: [revfactory/claude-code-harness](https://github.com/revfactory/claude-code-harness)
+
 ### 핵심 기능
 
 - **6가지 아키텍처 패턴** 자동 선택 및 적용:
   - Pipeline, Fan-out/Fan-in, Expert Pool
   - Producer-Reviewer, Supervisor, Hierarchical Delegation
 - **6-Phase 워크플로우** — 도메인 분석 → 팀 설계 → Agent 정의 → Skill 생성 → 통합 오케스트레이션 → 검증
-- **Progressive disclosure** — 단계별로 결과물을 보여주며 사용자 확인 후 진행
+- **Progressive Disclosure** — 단계별로 결과물을 보여주며 사용자 확인 후 진행 (컨텍스트 효율성 최적화)
 - **두 가지 실행 모드** — Agent Teams (기본) / Subagents
 - **검증 프레임워크** — 트리거 검증 + 비교 테스트
 
