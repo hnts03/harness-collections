@@ -156,6 +156,7 @@ harness/
 ### 설치
 
 ```
+/plugin marketplace add revfactory/harness
 /plugin install harness@claude-plugins-official
 ```
 
