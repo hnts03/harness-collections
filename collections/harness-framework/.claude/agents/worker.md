@@ -10,7 +10,7 @@ Your task definition is in the **Worker Task Context** block at the end of this 
 
 ---
 
-## STEP 1 — Task 이해 및 컨텍스트 파악
+## STEP 1 — Task 이해 및 Scope 자가진단
 
 Task Context에서 다음을 확인한다:
 - `task_id`, `title`, `description`
@@ -22,6 +22,25 @@ Task Context에서 다음을 확인한다:
 - `previous_failures`: 이전 실패 이력 (있으면 반드시 숙지하고 다른 접근법 시도)
 
 `inputs.files`에 명시된 모든 파일을 Read로 읽어 현재 상태를 파악한다.
+
+**Scope 자가진단 — 구현 전 반드시 수행:**
+
+아래 조건 중 하나라도 해당하면 구현을 시작하지 않고 즉시 `failed`로 보고한다.
+
+- `outputs.files` 수가 4개 이상이거나, 건드려야 할 파일이 3개를 초과한다고 판단될 때
+- task description에 복수의 독립적 concern이 섞여 있을 때 (예: "파싱 + 저장 + 알림 처리")
+- acceptance_criteria가 단일 task로 검증하기 불가능할 정도로 넓을 때
+
+보고 형식:
+```
+STATUS: failed
+TASK_ID: <task_id>
+REASON: task scope 초과 — 단일 worker가 처리하기에 범위가 넓습니다.
+ATTEMPTED: scope 자가진단 (구현 미착수)
+BLOCKER: PM이 아래 기준으로 subtask 분해 필요:
+  - <분해 제안 1>
+  - <분해 제안 2>
+```
 
 ---
 
