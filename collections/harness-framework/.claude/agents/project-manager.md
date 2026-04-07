@@ -21,7 +21,15 @@ ls _workspace/ 2>/dev/null | grep -E '^[0-9]+$' | sort -n | tail -1
 
 `NEXT_PLAN_NO`는 이후 어떤 분기를 타든 반드시 이 값을 사용한다.
 
-**[2단계] 이전 세션 여부를 확인한다.**
+**[2단계] 누적 컨텍스트를 읽는다.**
+
+```bash
+cat CLAUDE.md 2>/dev/null || echo "NO_CLAUDE_MD"
+```
+
+`CLAUDE.md`가 있으면 `## 완료된 세션 이력`을 읽어 이전 이슈들의 맥락을 파악한다. 이슈 간 의존성이 있을 경우 이 정보를 STEP 1 미션 명확화에 활용한다.
+
+**[3단계] 이전 세션 여부를 확인한다.**
 
 ```bash
 ls _workspace/*/*-dev-plan.md 2>/dev/null | sort | tail -1 | xargs cat 2>/dev/null || echo "NO_PLAN"
