@@ -22,22 +22,71 @@ Design Context에서 다음을 확인한다:
 
 ---
 
-## STEP 2 — 현재 하네스 에코시스템 파악
+## STEP 2 — 탐색 태스크 정의
 
-설계가 기존 자산과 충돌하지 않도록 현황을 확인한다:
+설계에 필요한 정보를 파악한다. 직접 파일을 읽지 말고, **어떤 정보가 필요한지**를 먼저 결정한다.
 
-```bash
-ls .claude/agents/ 2>/dev/null
-ls .claude/skills/ 2>/dev/null
-```
+아래 항목 중 이번 설계에 필요한 탐색 태스크를 선정한다:
 
-기존 에이전트/스킬의 이름, 역할, 패턴을 파악한다. 충돌 가능성이 있으면 설계 사양에 명시한다.
+| 태스크 ID | 탐색 대상 | 산출물 경로 |
+|----------|----------|------------|
+| `recon-agents` | `.claude/agents/` 전체 — 기존 에이전트 역할·모델·입출력 패턴 | `_workspace/<plan_id>/recon/agents-patterns.md` |
+| `recon-skills` | `.claude/skills/` 전체 — 기존 스킬 구조·description 패턴 | `_workspace/<plan_id>/recon/skills-patterns.md` |
+| `recon-references` | `references/` 또는 설계 참조 자료 | `_workspace/<plan_id>/recon/references-summary.md` |
+| `recon-codebase` | 프로젝트 코드베이스 구조 (있는 경우) | `_workspace/<plan_id>/recon/codebase-structure.md` |
+
+필요한 탐색 태스크만 선정한다. 불필요한 탐색은 생략한다.
 
 ---
 
-## STEP 3 — 설계
+## STEP 3 — Worker 병렬 스폰 (탐색 위임)
 
-연구 결과를 기반으로 다음 항목을 설계한다:
+선정된 탐색 태스크를 Worker에게 위임한다. 모든 탐색 Worker는 **병렬로 스폰**한다.
+
+`_workspace/<plan_id>/recon/` 디렉토리를 먼저 생성한다:
+
+```bash
+mkdir -p _workspace/<plan_id>/recon
+```
+
+각 Worker에게 전달할 컨텍스트 형식:
+
+```
+## Recon Task Context
+
+- **task_id**: <recon-태스크ID>
+- **title**: <탐색 대상 한 줄 설명>
+- **description**: <구체적으로 무엇을 읽고 어떤 관점으로 요약할지>
+- **inputs**:
+  - files: [<탐색할 디렉토리 또는 파일 경로>]
+  - context: 아키텍트가 설계 시 활용할 수 있는 패턴과 구조를 요약한다
+- **outputs**:
+  - files: [<산출물 경로>]
+- **acceptance_criteria**:
+  - 각 파일/에이전트/스킬의 주요 특성이 요약되어 있다
+  - 아키텍트가 파일을 직접 읽지 않아도 설계 판단을 내릴 수 있을 만큼 충분하다
+- **attempt**: 1
+- **previous_failures**: 없음
+```
+
+Worker 모델: **sonnet** (데이터 수집 중심, 판단 불필요).
+
+---
+
+## STEP 4 — 탐색 결과 취합
+
+모든 Worker가 완료되면 `_workspace/<plan_id>/recon/` 하위 파일들을 읽는다.
+
+탐색 결과를 바탕으로:
+- 기존 에이전트/스킬과의 충돌 가능성 파악
+- 재사용 가능한 기존 패턴 식별
+- 설계에 반영할 제약 조건 정리
+
+---
+
+## STEP 5 — 설계
+
+연구 결과 + 탐색 결과를 기반으로 다음 항목을 설계한다.
 
 **아키텍처 결정:**
 - 어떤 패턴을 사용할 것인가 (파이프라인/팬아웃/생성-검증 등)
@@ -64,7 +113,7 @@ ls .claude/skills/ 2>/dev/null
 
 ---
 
-## STEP 4 — 설계 사양 작성
+## STEP 6 — 설계 사양 작성
 
 `output_path`에 다음 구조로 설계 사양을 작성한다:
 
@@ -126,11 +175,12 @@ QA 에이전트가 프로토타입을 검증할 때 사용할 기준:
 
 ---
 
-## STEP 5 — 완료 보고
+## STEP 7 — 완료 보고
 
 ```
 STATUS: completed
 OUTPUT: <output_path>
+RECON_FILES: <생성된 recon 파일 목록>
 SUMMARY: <설계 핵심 결정 2~3줄>
 IMPLEMENTATION_TASKS:
 - <worker가 구현할 task 1>
