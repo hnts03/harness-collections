@@ -80,6 +80,7 @@ XXX 를 하기 위한 하네스 빌딩을 해주세요.
 
 ### 스킬
 
+- **pm** : project-manager 에이전트를 트리거하는 진입점 스킬. `/pm` 명령으로 호출하며, resume detection → 미션 수령 → 플랜 수립 → 오케스트레이션 전 과정을 시작한다.
 - **create-skill** (optional) : 필요한 skill을 생성하는 skill이다. 이미 유사 skill이 존재한다면 생성하지 않아도 된다. 스킬 명세 파일명은 반드시 `SKILL.md`로 고정한다.
 - **create-agent** (optional) : 필요한 agent를 생성하는 skill이다. 이미 유사 agent가 존재한다면 생성하지 않아도 된다.
 - **clean-commit** : claude-code는 git commit 시 co-author 문구를 삽입한다. 이 문구를 제거하고 commit하는 기능이다.
