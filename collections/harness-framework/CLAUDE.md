@@ -38,3 +38,4 @@ PM 에이전트를 `/pm` 스킬로 트리거하여 R&D 세션을 시작합니다
 <!-- update-from-phase 스킬이 각 세션(플랜) 완료 시 아래에 추가한다 -->
 <!-- 형식: - [YYYY-MM-DD] 플랜 NNN: <한 줄 요약> — 주요 산출물: <파일/결정사항> -->
 - [2026-04-09] 플랜 003 완료: PM 에이전트 실행 가시성 개선 — 원인 진단(3계층: 플랫폼/프롬프트/중첩) 후 project-manager.md에 실행 가시성 프로토콜(규칙 1~4) 추가 — 주요 산출물: .claude/agents/project-manager.md, docs/phase_003/003-session-report.md
+- [2026-04-09] 플랜 004 완료: PM ad-hoc 문서화 의무화 + harness-skill-template.md 패턴 전파 — 주요 산출물: .claude/agents/project-manager.md, harness-skill-template.md
