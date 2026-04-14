@@ -95,7 +95,7 @@ XXX 를 하기 위한 하네스 빌딩을 해주세요.
 - **pm** : project-manager 에이전트를 트리거하는 진입점 스킬. `/pm` 명령으로 호출하며, resume detection → 미션 수령 → 플랜 수립 → 오케스트레이션 전 과정을 시작한다.
 - **create-skill** (optional) : 필요한 skill을 생성하는 skill이다. 이미 유사 skill이 존재한다면 생성하지 않아도 된다. 스킬 명세 파일명은 반드시 `SKILL.md`로 고정한다.
 - **create-agent** (optional) : 필요한 agent를 생성하는 skill이다. 이미 유사 agent가 존재한다면 생성하지 않아도 된다.
-- **clean-commit** : claude-code는 git commit 시 co-author 문구를 삽입한다. 이 문구를 제거하고 commit하는 기능이다.
+- **clean-commit** : claude-code는 git commit 시 co-author 문구를 삽입한다. 이 문구를 제거하고, DCO `Signed-off-by` 서명을 삽입하여 commit하는 기능이다. 글로벌/로컬 git identity가 2개 이상 존재하면 유저에게 어느 identity를 사용할지 확인한다.
 - **update-from-phase** : phase 완료 시 PM이 직접 트리거한다. dev-plan.md의 phase 상태 마킹, CLAUDE.md·memory 갱신, git commit & push를 일괄 처리한다. task 단위 갱신은 PM이 직접 수행하며 이 스킬은 덮어쓰지 않는다.
 
 > **[체크포인트 3/4 — 팀 구성 확정]**

@@ -183,7 +183,39 @@ git diff --name-only
 
 ---
 
-## PHASE 6 — 커밋 메시지 작성 및 커밋
+## PHASE 6 — DCO 서명 정보 해결
+
+커밋 전 DCO(Developer Certificate of Origin) 서명에 사용할 identity를 확정한다.
+
+```bash
+GLOBAL_NAME=$(git config --global user.name 2>/dev/null || echo "")
+GLOBAL_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
+LOCAL_NAME=$(git config --local user.name 2>/dev/null || echo "")
+LOCAL_EMAIL=$(git config --local user.email 2>/dev/null || echo "")
+echo "GLOBAL: $GLOBAL_NAME <$GLOBAL_EMAIL>"
+echo "LOCAL:  $LOCAL_NAME <$LOCAL_EMAIL>"
+```
+
+결과에 따라 처리한다:
+
+- **로컬 identity 없음** (LOCAL_NAME/EMAIL이 빈 값): 글로벌 identity를 자동 사용한다.
+- **로컬 = 글로벌**: 글로벌 identity를 자동 사용한다.
+- **로컬 ≠ 글로벌 (둘 다 존재)**: 사용자에게 확인한다.
+
+  ```
+  [DCO 서명] 두 개의 git identity가 감지되었습니다:
+  1. 글로벌: <GLOBAL_NAME> <GLOBAL_EMAIL>
+  2. 로컬:   <LOCAL_NAME> <LOCAL_EMAIL>
+  어떤 identity로 서명하시겠습니까? (1/2)
+  ```
+
+- **글로벌도 없음**: 사용자에게 이름과 이메일을 직접 입력해달라고 요청한다.
+
+결정된 값을 `DCO_NAME`, `DCO_EMAIL` 로 기억한다.
+
+---
+
+## PHASE 7 — 커밋 메시지 작성 및 커밋
 
 **Commit message convention 탐지:**
 ```bash
@@ -200,6 +232,8 @@ cat .github/COMMIT_CONVENTION.md 2>/dev/null || true
 git add -u
 git commit -m "$(cat <<'COMMITMSG'
 <작성한 커밋 메시지>
+
+Signed-off-by: <DCO_NAME> <<DCO_EMAIL>>
 COMMITMSG
 )"
 ```
@@ -212,7 +246,7 @@ COMMITMSG
 
 ---
 
-## PHASE 7 — 완료 보고
+## PHASE 8 — 완료 보고
 
 커밋 해시와 메시지를 출력한다:
 ```bash
