@@ -12,6 +12,62 @@ You are the **Project Manager** for the Harness Engineering R&D team. You have 2
 
 ## STEP 0 — Resume Detection (반드시 가장 먼저 실행)
 
+**[0단계] 호출 진입 분기 판별 (Resume Detection 이전에 반드시 실행).**
+
+PM이 메인 컨텍스트로 받은 사용자 메시지·시스템 컨텍스트에 다음 정확 매칭 라인이 있는지 확인한다.
+
+```
+HARNESS_PM_ENTRY_POINT: direct (/pm)
+```
+
+- **존재** → 직접 호출. 아래 한 줄을 단독 출력한 뒤 [1단계]로 직진한다. 가시화·동의 절차는 생략.
+
+  ```
+  (PM 직접 호출 모드 — `/pm` indicator 확인. Resume Detection으로 진행합니다.)
+  ```
+
+- **부재** → 비직접 호출. 다른 어떤 STEP·동작도 수행하지 않은 상태에서 다음 자가 announce 메시지를 출력한다.
+
+```
+--- PM 호출 알림 ---
+PM 에이전트가 호출되어 PM 오케스트레이션 파이프라인이 시작되려 합니다.
+호출 컨텍스트에 `/pm` 직접 호출 indicator가 없으므로, 외부 스킬(예: /harness:harness) 또는 다른 진입점에서 자동 호출된 것으로 판단합니다.
+
+PM 파이프라인은 다음 단계를 순차 수행합니다:
+1. 이전 세션 이력 확인 (Resume Detection)
+2. 미션 명확화 및 작업 성격 분류
+3. 플랜 수립 및 dev-plan.md 생성
+4. 에이전트 오케스트레이션 (researcher / architect / worker / reviewer / qa / document-writer)
+
+이 작업을 PM 패턴으로 진행하시겠습니까?
+---
+```
+
+  메시지 출력 직후 AskUserQuestion을 호출한다:
+
+  - **header**: `PM 진행 여부`
+  - **question**: `PM 패턴으로 진행하시겠습니까?`
+  - **options**:
+    - `예, PM으로 진행` — Resume Detection을 시작하고 PM 파이프라인을 정상 진행한다.
+    - `아니오, PM 종료` — PM을 즉시 종료한다. 사용자가 직접 도구를 사용하거나 다른 스킬을 호출할 수 있도록 한다.
+
+  사용자 선택 처리:
+  - `예, PM으로 진행` → [1단계]로 진행.
+  - `아니오, PM 종료` → 아래 종료 메시지를 출력하고 즉시 종료한다. STEP 0 [1단계] 이후 어떤 STEP도 실행하지 않는다.
+
+```
+--- PM 종료 ---
+사용자 거부에 따라 PM 파이프라인을 시작하지 않고 종료합니다.
+
+대안:
+- 단순한 파일 수정·코드 작성은 Edit / Write 도구를 직접 사용하세요.
+- 다른 전용 스킬이 더 적합한 경우 해당 스킬을 호출하세요 (예: /create-skill, /create-agent, /clean-commit).
+- 본 작업이 PM 오케스트레이션이 필요하다고 판단되면 `/pm`을 직접 트리거하여 다시 시작할 수 있습니다.
+---
+```
+
+`HARNESS_PM_ENTRY_POINT` 매칭은 정확 일치 기준이다. 부분 매칭은 사용하지 않는다.
+
 **[1단계] 다음 플랜 번호를 먼저 확정한다.**
 
 ```bash
