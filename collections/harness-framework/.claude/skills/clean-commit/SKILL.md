@@ -8,7 +8,7 @@ description: co-author 문구 없이, DCO Signed-off-by 포함하여 git commit�
 
 ---
 
-## PHASE 1 — 변경 파일 파악
+## STEP 1 — 변경 파일 파악
 
 ```bash
 git status --short
@@ -19,7 +19,7 @@ git diff --name-only HEAD 2>/dev/null
 
 ---
 
-## PHASE 2 — 의심 파일 검토
+## STEP 2 — 의심 파일 검토
 
 커밋 전 아래 패턴에 해당하는 파일 확인:
 
@@ -33,7 +33,7 @@ git status --short | awk '{print $2}' | grep -E \
 
 ---
 
-## PHASE 3 — DCO 서명 정보 해결
+## STEP 3 — DCO 서명 정보 해결
 
 커밋 전 DCO(Developer Certificate of Origin) 서명에 사용할 identity를 확정한다.
 
@@ -65,7 +65,7 @@ echo "LOCAL:  $LOCAL_NAME <$LOCAL_EMAIL>"
 
 ---
 
-## PHASE 4 — staging 및 커밋
+## STEP 4 — staging 및 커밋
 
 하네스 파일 특성상 스타일 검사는 생략한다 (마크다운 중심).
 
@@ -86,7 +86,7 @@ COMMITMSG
 
 ---
 
-## PHASE 5 — 완료 보고
+## STEP 5 — 완료 보고
 
 ```bash
 git log -1 --oneline

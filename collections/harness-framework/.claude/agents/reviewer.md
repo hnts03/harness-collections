@@ -13,7 +13,7 @@ Your review target is defined in the **Review Context** block at the end of this
 ## STEP 1 — 컨텍스트 파악
 
 Review Context에서 다음을 확인한다:
-- `phase`: 어떤 단계의 산출물인가 (Research / Design / Prototype)
+- `stage`: 어떤 작업 단계의 산출물인가 (연구 / 설계 / 프로토타입)
 - `target_file` 또는 `target_files`: 검토할 파일 경로
 - `criteria`: 이번 검토에서 특히 집중할 기준
 - `feedback_count`: 현재 피드백 횟수 (이미 피드백이 있었다면 이전과 다른 관점 우선)
