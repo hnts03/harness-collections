@@ -28,7 +28,7 @@ PM 에이전트를 `/pm` 스킬로 트리거하여 R&D 세션을 시작합니다
 
 ## 운영 원칙
 
-- 플랜은 `_workspace/<플랜번호>/` 에서 격리 관리 (`_workspace/` 는 gitignore)
+- 플랜은 `_workspace/<NNN>-<short-job-description>/` 에서 격리 관리. 기존 `_workspace/<NNN>/` 형식도 인정. (`_workspace/` 는 gitignore)
 - task = 단일 concern, 수정 파일 최대 3개
 - 병렬 worker 스폰 시 `outputs.files` 겹침 체크 필수
 - 작업 도중 모호한 사항 발생 시 즉시 유저에게 질문
@@ -41,3 +41,4 @@ PM 에이전트를 `/pm` 스킬로 트리거하여 R&D 세션을 시작합니다
 - [2026-04-09] 플랜 004 완료: PM ad-hoc 문서화 의무화 + harness-skill-template.md 패턴 전파 — 주요 산출물: .claude/agents/project-manager.md, harness-skill-template.md
 - [2026-05-08] 플랜 005 완료: harness-skill-template.md에 세 운영 원칙(① 무허가 방향성 결정 금지, ② 의미 불명 코드네임·약어 금지, ③ "phase" 용어를 유저 대상·dev-plan 상위 구조에서 사용 제한) 반영. 8개 변경 항목 적용(공통 운영 원칙 강화, dev-plan 구조 예시 전면 교체, task 식별자 작성 규칙 신설, "Phase 완료 시" → "작업 단계 완료 시", `## Phase 0` → `## 도메인 분석` 등). 후속 분리 항목 3건(실행 가시성 프로토콜 phase 표기, docs/phase_<N>/ 명명, project-manager.md 동일 원칙 반영) — 주요 산출물: harness-skill-template.md
 - [2026-05-08] 플랜 006 완료: 팀 자산 13개 파일을 harness-skill-template.md와 일관성 확보. 6개 파일 / 13개 변경 항목 적용 — project-manager.md(8개: 공통 원칙 신설·dev-plan 예시 개정·식별자 규칙 신설·실행 가시성 프로토콜 정렬 등), harness-skill-template.md(line 192-201 실행 가시성 프로토콜 표 정렬, 플랜 005 후속 분리 #1 처리), reviewer.md(line 16 컨텍스트 키 phase→stage), clean-commit/SKILL.md(5개 헤더 PHASE→STEP), create-skill·create-agent SKILL.md(신규 스킬·에이전트가 따라야 할 운영 원칙 H2 섹션 신설). 변경 없는 8개 파일은 점검 근거 명시 후 보존. 다음 플랜 후보 2건 등록(/harness 라우팅 결정 가시성 보완, _workspace 디렉토리 명명 규칙 확장) — 주요 산출물: 6개 파일 + _workspace/006/design-spec.md
+- [2026-05-08] 플랜 007 완료: _workspace 하위 plan 디렉토리 명명 규칙을 `_workspace/<NNN>/`에서 `_workspace/<NNN>-<short-job-description>/`로 확장. 4개 파일 / 13개 변경 항목 적용 — harness-skill-template.md(채번 규칙·STEP 2 식별자 도출 절차·placeholder 통일 7개), project-manager.md(STEP 0 정규식·STEP 2 식별자 절차·"표기 약속" 단락 신설·11건 일괄 치환), update-from-phase/SKILL.md(컨텍스트 변수 `<플랜 디렉토리>` 추가, dev-plan 경로), CLAUDE.md(운영 원칙 line 31 신규 명명 규칙). 핵심 결정 4건: ① 새 명명 규칙 정의, ② resume detection 정규식 `^[0-9]{3}(-[a-z0-9-]+)?$` + sed 추출(기존 001~006 호환), ③ dev-plan 파일명 `<NNN>-dev-plan.md` 형식 유지(디렉토리명과 비동기), ④ PM STEP 2 식별자 도출 절차 명령형 신설. 유저 결정 3건: 기존 디렉토리 미마이그레이션·세션 이력 미변경·dev-plan 파일명 단순 유지. 검증 단계 라이브 시나리오 4건 모두 합격(매칭 8건/배제 5건 정확). 다음 플랜 후보 1건(/harness 라우팅 가시성, 플랜 006에서 등록) 미해결 — 주요 산출물: 4개 파일 + _workspace/007-workspace-rename/{007-dev-plan.md, design-spec.md}

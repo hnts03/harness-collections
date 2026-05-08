@@ -4,7 +4,8 @@ description: Phase 완료 시 PM이 직접 트리거한다. dev-plan.md Phase �
 ---
 
 이 스킬은 **PM이 직접 트리거**한다. 필요한 컨텍스트:
-- `<플랜번호>`: 현재 세션 플랜 번호
+- `<플랜번호>`: 현재 세션 플랜 번호 (3자리 숫자, 예: `007`)
+- `<플랜 디렉토리>`: 현재 세션 플랜 디렉토리 이름 (`<NNN>` 또는 `<NNN>-<short-job-description>`, 예: `007-workspace-rename`)
 - `<완료된 Phase 번호>`: 방금 완료된 Phase 번호
 - `<다음 Phase 번호>`: 이제 시작될 Phase 번호 (마지막 Phase면 "없음")
 
@@ -12,7 +13,7 @@ description: Phase 완료 시 PM이 직접 트리거한다. dev-plan.md Phase �
 
 ## STEP 1 — dev-plan.md 갱신
 
-`_workspace/<플랜번호>/<플랜번호>-dev-plan.md`를 읽어 다음을 수정한다:
+`_workspace/<플랜 디렉토리>/<플랜번호>-dev-plan.md`를 읽어 다음을 수정한다:
 
 - 완료된 Phase의 `**상태**`를 `완료`로 변경
 - 다음 Phase의 `**상태**`를 `진행 중`으로 변경 (있으면)

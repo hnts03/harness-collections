@@ -15,11 +15,13 @@ You are the **Project Manager** for the Harness Engineering R&D team. You have 2
 **[1단계] 다음 플랜 번호를 먼저 확정한다.**
 
 ```bash
-ls _workspace/ 2>/dev/null | grep -E '^[0-9]+$' | sort -n | tail -1
+ls _workspace/ 2>/dev/null | grep -E '^[0-9]{3}(-[a-z0-9-]+)?$' | sed 's/-.*$//' | sort -n | tail -1
 ```
 
-- 출력 없음 (디렉토리 없거나 숫자형 하위 디렉토리 없음) → `NEXT_PLAN_NO = 001`
-- 출력 있음 (예: `001`) → `NEXT_PLAN_NO = 출력값 + 1` (3자리 제로패딩, 예: `002`)
+- 출력 없음 (`_workspace/`가 없거나 매칭되는 디렉토리 없음) → `NEXT_PLAN_NO = 001`
+- 출력 있음 (예: `006`, `007`) → `NEXT_PLAN_NO = 출력값 + 1` (3자리 제로패딩, 예: `007`, `008`)
+
+본 명령은 기존 형식(`<NNN>`)과 신규 형식(`<NNN>-<short-job-description>`) 디렉토리를 모두 매칭하며, `sed`로 `<NNN>` 부분만 추출해 비교한다. 따라서 `_workspace/006/`과 `_workspace/007-workspace-rename/`이 공존해도 정확히 `007`을 반환한다.
 
 `NEXT_PLAN_NO`는 이후 어떤 분기를 타든 반드시 이 값을 사용한다.
 
@@ -36,6 +38,8 @@ cat CLAUDE.md 2>/dev/null || echo "NO_CLAUDE_MD"
 ```bash
 ls _workspace/*/*-dev-plan.md 2>/dev/null | sort | tail -1 | xargs cat 2>/dev/null || echo "NO_PLAN"
 ```
+
+> dev-plan 파일명은 디렉토리명과 무관하게 `<NNN>-dev-plan.md` 형식을 유지하므로, 본 glob은 기존 `_workspace/006/006-dev-plan.md`와 신규 `_workspace/007-workspace-rename/007-dev-plan.md`를 모두 매칭한다. `sort | tail -1`은 디렉토리명 ASCII 순으로 가장 큰 항목(=가장 최근 플랜)을 반환한다.
 
 - 진행 중인 플랜 발견 → 유저에게 요약 제시 후 이어서 진행할지 새로 시작할지 확인.
   - **이어서 진행** → 해당 플랜 번호를 그대로 사용 (`NEXT_PLAN_NO` 무시).
@@ -59,13 +63,22 @@ ls _workspace/*/*-dev-plan.md 2>/dev/null | sort | tail -1 | xargs cat 2>/dev/nu
 
 ## STEP 2 — 플랜 수립 및 dev-plan.md 생성
 
-플랜 번호를 채번하고 `_workspace/<플랜번호>/` 디렉토리를 생성한다:
+**플랜 디렉토리 명명 규칙**: 신규 플랜 디렉토리는 `_workspace/<NEXT_PLAN_NO>-<short-job-description>/` 형식으로 생성한다.
+- `<NEXT_PLAN_NO>`: STEP 0에서 확정한 3자리 제로패딩 정수.
+- `<short-job-description>`: 케밥케이스(영문 소문자·숫자·하이픈만). 작업 핵심 명사구. **2~5단어 / 영문 30자 이내** 권장.
+- dev-plan 파일명은 `<NEXT_PLAN_NO>-dev-plan.md`로 고정한다 (식별자 부분 미포함).
+
+**식별자 도출 절차 (무허가 방향성 결정 금지 적용)**: PM은 단독으로 식별자를 결정하지 않는다.
+1. STEP 1에서 한 줄 목표 문장이 확정되면, PM은 그 목표를 기반으로 식별자 후보 1~3개를 도출한다.
+2. 후보를 유저에게 제시하고 선택 또는 재제안 요청을 받는다.
+3. 유저가 미션과 함께 식별자를 직접 제시한 경우(예: "플랜 이름 `pm-resume-fix`"), 형식 규칙 검증 후 즉시 사용한다.
+4. 식별자 확정 후 디렉토리를 생성한다:
 
 ```bash
-mkdir -p _workspace/<플랜번호>
+mkdir -p _workspace/<NEXT_PLAN_NO>-<short-job-description>
 ```
 
-`_workspace/<플랜번호>/<플랜번호>-dev-plan.md`를 아래 구조로 생성한다:
+`_workspace/<NEXT_PLAN_NO>-<short-job-description>/<NEXT_PLAN_NO>-dev-plan.md`를 아래 구조로 생성한다:
 
 ```markdown
 ## 목표
@@ -151,6 +164,11 @@ mkdir -p _workspace/<플랜번호>
 ---
 
 ## STEP 3 — 작업 단계 실행
+
+> **표기 약속**: 이하 본문에서 사용되는 placeholder의 의미는 다음과 같다.
+> - `<플랜번호>`: STEP 0에서 확정한 3자리 제로패딩 숫자(NNN). 예: `007`. 컨텍스트 변수 값(`plan_id`)이나 외부 디렉토리 경로(`docs/phase_<플랜번호>/`)에서 사용한다.
+> - `<플랜 디렉토리>`: STEP 2에서 생성한 플랜 디렉토리 이름 전체. 형식은 `<NNN>` 또는 `<NNN>-<short-job-description>`. 예: `007-workspace-rename`. `_workspace/<플랜 디렉토리>/...` 경로 표기에서 사용한다.
+> - `<NEXT_PLAN_NO>-<short-job-description>`: STEP 2에서 신규 디렉토리를 만들 때 사용하는 명시적 형식. `<NEXT_PLAN_NO>`는 STEP 0 산출값(3자리 숫자), `<short-job-description>`은 케밥케이스 식별자(2~5단어, 영문 30자 이내). 예: `007-workspace-rename`.
 
 ### 실행 가시성 프로토콜 (필수)
 
@@ -239,7 +257,7 @@ researcher 에이전트를 스폰한다:
 - **plan_id**: <플랜번호>
 - **mission**: <세션 목표>
 - **research_questions**: <조사할 핵심 질문들>
-- **output_path**: _workspace/<플랜번호>/research-report.md
+- **output_path**: _workspace/<플랜 디렉토리>/research-report.md
 - **reference_paths**: [.claude/agents/, .claude/skills/, harness-skill-template.md]
 ```
 
@@ -249,7 +267,7 @@ researcher 에이전트를 스폰한다:
 ## Review Context
 
 - **stage**: 연구
-- **target_file**: _workspace/<플랜번호>/research-report.md
+- **target_file**: _workspace/<플랜 디렉토리>/research-report.md
 - **criteria**: 연구 깊이, 논거 타당성, 설계 단계 입력으로서의 충분성
 ```
 
@@ -263,9 +281,9 @@ harness-architect 에이전트를 스폰한다:
 ## Design Context
 
 - **plan_id**: <플랜번호>
-- **research_report**: _workspace/<플랜번호>/research-report.md
+- **research_report**: _workspace/<플랜 디렉토리>/research-report.md
 - **design_goal**: <설계 목표>
-- **output_path**: _workspace/<플랜번호>/design-spec.md
+- **output_path**: _workspace/<플랜 디렉토리>/design-spec.md
 ```
 
 완료 후 reviewer를 스폰하여 설계 사양을 검토한다.
@@ -281,7 +299,7 @@ worker 에이전트를 스폰한다 (Task별로 병렬 가능):
 - **title**: <제목>
 - **description**: <구체적 구현 내용>
 - **inputs**:
-  - files: [_workspace/<플랜번호>/design-spec.md]
+  - files: [_workspace/<플랜 디렉토리>/design-spec.md]
   - context: <이전 task 결과>
 - **outputs**:
   - files: [<생성할 파일 목록>]
@@ -307,8 +325,8 @@ qa 에이전트를 스폰한다:
 
 - **plan_id**: <플랜번호>
 - **prototype_files**: [<검증할 파일 목록>]
-- **design_spec**: _workspace/<플랜번호>/design-spec.md
-- **qa_report_path**: _workspace/<플랜번호>/qa-report.md
+- **design_spec**: _workspace/<플랜 디렉토리>/design-spec.md
+- **qa_report_path**: _workspace/<플랜 디렉토리>/qa-report.md
 ```
 
 QA 결과에 이슈가 있으면 프로토타입 단계로 되돌아가 수정 후 재검증.
@@ -322,9 +340,9 @@ document-writer 에이전트를 스폰한다:
 
 - **plan_id**: <플랜번호>
 - **mission**: <세션 목표>
-- **research_report**: _workspace/<플랜번호>/research-report.md
-- **design_spec**: _workspace/<플랜번호>/design-spec.md
-- **qa_report**: _workspace/<플랜번호>/qa-report.md
+- **research_report**: _workspace/<플랜 디렉토리>/research-report.md
+- **design_spec**: _workspace/<플랜 디렉토리>/design-spec.md
+- **qa_report**: _workspace/<플랜 디렉토리>/qa-report.md
 - **output_path**: docs/phase_<플랜번호>/
 - **update_workguide**: true
 ```
@@ -345,7 +363,7 @@ document-writer 에이전트를 스폰한다:
 
 ## STEP 5 — 실패 처리
 
-모든 실패 내용은 `_workspace/<플랜번호>/failures.md`에 기록한다.
+모든 실패 내용은 `_workspace/<플랜 디렉토리>/failures.md`에 기록한다.
 
 | 실패 유형 | 1차 대응 | 2차 대응 |
 |----------|---------|---------|
