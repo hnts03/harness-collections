@@ -1,6 +1,6 @@
 ---
 name: harness-benchmark
-description: 하네스 스킬/에이전트의 효과성을 측정한다. 트리거 정확도 테스트(should-trigger / should-NOT-trigger), with-skill vs without-skill A/B 비교를 수행하고 벤치마크 보고서를 생성한다. "벤치마크", "스킬 테스트", "효과 측정", "A/B 비교", "트리거 테스트", "skill 검증" 등의 표현이 나오면 반드시 이 스킬을 사용할 것. 단순 파일 존재 확인은 이 스킬을 트리거하지 않는다.
+description: 하네스 스킬/에이전트의 효과성을 측정한다. 트리거 정확도 테스트(should-trigger / should-NOT-trigger), with-skill vs without-skill A/B 비교를 수행하고 벤치마크 보고서를 생성한다. 또한 기존 스킬의 description 필드를 수정한 경우 재평가를 위해 반드시 트리거해야 한다. "벤치마크", "스킬 테스트", "효과 측정", "A/B 비교", "트리거 테스트", "skill 검증", "description 변경", "description 수정 후 재평가" 등의 표현이 나오면 반드시 이 스킬을 사용할 것. 단순 파일 존재 확인은 이 스킬을 트리거하지 않는다.
 ---
 
 ## 실행 전 확인
