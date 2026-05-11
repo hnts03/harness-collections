@@ -35,7 +35,7 @@ model: opus  # 또는 sonnet
 
 **description 작성 가이드 (축약 적용):**
 
-에이전트 description은 PM이 에이전트를 선택할 때 참조하는 메타데이터이지 `/` 트리거 키워드가 아니다. 정식 정의는 `harness-skill-template.md` "스킬 작성 컨벤션 → Description = routing trigger 3요소" 마지막 단락(에이전트 description 축약 적용) 참조.
+에이전트 description은 PM이 에이전트를 선택할 때 참조하는 메타데이터이지 `/` 트리거 키워드가 아니다. 정식 정의는 `harness-skill-template/references/skill-authoring-conventions.md` "Description = routing trigger 3요소" 섹션 마지막 단락(에이전트 description 축약 적용) 참조.
 
 작성 절차:
 - 에이전트가 받는 작업 유형을 1~2개 동사로 명시한다 (예: "조사·분석", "구현", "리뷰", "검증").
@@ -73,7 +73,7 @@ model: opus  # 또는 sonnet
 - **무허가 방향성 결정 금지**: 본문에 "유저 허가 없이 작업 방향·구조·해결책을 결정하지 않는다"를 명시한다. 단, 에이전트가 자체 판단 권한을 갖는 영역(예: PM의 ad-hoc 직접 실행, architect의 점검 기준 자체 판단 영역 등)이 있으면 본문에서 그 경계를 명확히 기술한다. "무엇을 자체 결정하고, 무엇을 caller/유저에게 위임하는가"를 STEP 본문 또는 별도 원칙 단락으로 표기한다.
 - **의미 불명 코드네임/약어 금지**: 신규 에이전트가 출력하는 식별자(`task_id`, 보고 키 등)와 받는 컨텍스트 키 명칭은 서술형으로 작성한다. `T1`, `G2` 같은 단순 코드네임은 금지한다. `STEP 1`, `MODULE A` 같은 자체 작업 흐름 표현은 허용한다. 의미 약어 케밥케이스(`recon-agents`, `qa-trigger-test` 등)도 허용 범주.
 - **"phase" 용어 사용 제한**: 신규 에이전트가 메인 컨텍스트에 출력하는 보고에서 "phase" 단어를 사용하지 않는다. 작업 단계 호칭은 서술형(예: "단계 시작", "작업 단계 완료")을 사용한다. 자체 작업 흐름 표현(`STEP N`, `MODULE A`)은 허용. 에이전트 내부 협업용 컨텍스트 키에서 phase를 호칭으로 사용하는 경우는 허용하되, 가급적 `stage` 등 정렬된 표현을 우선한다.
-- **Cost test 자문 (template 참조)**: 신규 에이전트를 만들기 전, "이 에이전트가 없으면 잘못 동작하는가?"를 자문한다. 답이 "아니오"면 만들지 않는다. 정식 정의는 `harness-skill-template.md` "스킬 작성 컨벤션 → Cost test (비용 자문)" 참조.
+- **Cost test 자문 (template 참조)**: 신규 에이전트를 만들기 전, "이 에이전트가 없으면 잘못 동작하는가?"를 자문한다. 답이 "아니오"면 만들지 않는다. 정식 정의는 `harness-skill-template/references/skill-authoring-conventions.md` "Cost test (비용 자문)" 섹션 참조.
 
 ---
 

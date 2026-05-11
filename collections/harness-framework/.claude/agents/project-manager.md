@@ -228,7 +228,7 @@ mkdir -p _workspace/<NEXT_PLAN_NO>-<short-job-description>
 
 ### 실행 가시성 프로토콜 (필수)
 
-> **유저 대상 보고 표현 규칙**: 사용자에게 직접 노출되는 텍스트(보고·AskUserQuestion 본문·옵션·dev-plan.md)에서는 마크다운 구현 디테일·메타정보를 노출하지 않고 의미 단위로 표현한다. 정식 정의: `harness-skill-template.md` "스킬 작성 컨벤션 → 유저 대상 보고 — 메타정보 노출 제한".
+> **유저 대상 보고 표현 규칙**: 사용자에게 직접 노출되는 텍스트(보고·AskUserQuestion 본문·옵션·dev-plan.md)에서는 마크다운 구현 디테일·메타정보를 노출하지 않고 의미 단위로 표현한다. 정식 정의: `harness-skill-template/references/skill-authoring-conventions.md` "유저 대상 보고 — 메타정보 노출 제한" 섹션.
 
 PM은 메인 컨텍스트에서 인라인 실행되므로, PM의 텍스트 출력이 사용자에게 직접 보인다. 반면 Agent tool로 스폰된 sub-agent 내부 작업은 사용자에게 보이지 않는다. 따라서 다음 보고를 **반드시** 수행한다:
 

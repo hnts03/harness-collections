@@ -17,7 +17,7 @@ description: 새로운 하네스 스킬(SKILL.md)을 생성한다. 스킬 설계
    - 주요 실행 단계
    - 트리거 조건 (어떤 상황에서 사용하는가)
 
-3. **글로벌 컨텍스트 복제 금지 자문 (template 참조)**: 다음 3개 질문을 모두 확인한다. 하나라도 "예"이면 스킬 생성을 중단하고 유저에게 대안을 제안한다. 정식 정의는 `harness-skill-template.md` "스킬 작성 컨벤션 → 글로벌 컨텍스트 복제 금지 자문" 참조.
+3. **글로벌 컨텍스트 복제 금지 자문 (template 참조)**: 다음 3개 질문을 모두 확인한다. 하나라도 "예"이면 스킬 생성을 중단하고 유저에게 대안을 제안한다. 정식 정의는 `harness-skill-template/references/skill-authoring-conventions.md` "글로벌 컨텍스트 복제 금지 자문" 섹션 참조.
    - 이 내용이 `CLAUDE.md`에 들어가야 할 **글로벌 지침**이 아닌가?
    - 이 내용이 **단일 문장 프롬프트**로 대체 가능하지 않은가?
    - 이 스킬이 정말 **독립 트리거 가치**가 있는가, 아니면 기존 스킬의 확장으로 충분한가?
@@ -28,7 +28,7 @@ description: 새로운 하네스 스킬(SKILL.md)을 생성한다. 스킬 설계
 
 ## STEP 0 — 트리거 매트릭스 작성
 
-description을 작성하기 **전에** 트리거 매트릭스를 먼저 작성한다. 정식 컨벤션은 `harness-skill-template.md` "스킬 작성 컨벤션 → Eval-first 트리거 매트릭스" 참조. 본 STEP은 운영 절차만 다룬다.
+description을 작성하기 **전에** 트리거 매트릭스를 먼저 작성한다. 정식 컨벤션은 `harness-skill-template/references/skill-authoring-conventions.md` "Eval-first 트리거 매트릭스" 섹션 참조. 본 STEP은 운영 절차만 다룬다.
 
 작성 절차:
 1. should-trigger 케이스 ≥5개, should-NOT-trigger 케이스 ≥2개(near-miss 중심) 작성.
@@ -55,7 +55,7 @@ description: <적극적 트리거 유도형 description>
 
 **description 작성 원칙 (핵심):**
 
-description은 사용자 쿼리에 대한 라우팅 신호다. 정식 정의는 `harness-skill-template.md` "스킬 작성 컨벤션 → Description = routing trigger 3요소" 참조. 본 절은 운영 절차만 다룬다.
+description은 사용자 쿼리에 대한 라우팅 신호다. 정식 정의는 `harness-skill-template/references/skill-authoring-conventions.md` "Description = routing trigger 3요소" 섹션 참조. 본 절은 운영 절차만 다룬다.
 
 작성 절차:
 1. STEP 0(아래)에서 작성한 트리거 매트릭스를 입력으로 받는다.
@@ -80,13 +80,13 @@ description은 사용자 쿼리에 대한 라우팅 신호다. 정식 정의는 
 - **무허가 방향성 결정 금지**: 신규 스킬은 작업 방향·구조·해결책을 자체 결정하지 않는다. 본문에 "유저 align 지점"을 명시한다 — 어떤 시점에 유저에게 확인을 받아야 하는지(예: 명세 누락 시 질문, 모호한 요구사항 발견 시 즉시 align)를 STEP 또는 "실행 전 확인" 섹션으로 명문화한다.
 - **의미 불명 코드네임/약어 금지**: 신규 스킬의 식별자(섹션 헤더, 변수명, task_id 등)는 서술형으로 작성한다. `T1`, `G2` 같은 단순 코드네임은 금지한다. `STEP 1`, `MODULE A` 같은 자체 작업 흐름 표현은 허용한다. 의미 약어 케밥케이스(`recon-agents`, `qa-trigger-test` 등)도 허용 범주.
 - **"phase" 용어 사용 제한**: 신규 스킬의 유저 대상 출력(보고 형식, 본문 헤더, 본문 안 안내문 등)과 외부 문서(`README.md` 등)에서 "phase" 단어를 사용하지 않는다. 자체 작업 흐름 호칭은 `## STEP N` 또는 서술형(예: "단계 시작")을 사용한다. 에이전트 내부 협업용으로만 phase를 호칭하는 경우는 허용한다.
-- **Cost test 자문 (template 참조)**: 신규 스킬을 만들기 전, "이 스킬이 없으면 에이전트가 잘못 동작하는가?"를 자문한다. 답이 "아니오"면 만들지 않는다. 정식 정의는 `harness-skill-template.md` "스킬 작성 컨벤션 → Cost test (비용 자문)" 참조.
+- **Cost test 자문 (template 참조)**: 신규 스킬을 만들기 전, "이 스킬이 없으면 에이전트가 잘못 동작하는가?"를 자문한다. 답이 "아니오"면 만들지 않는다. 정식 정의는 `harness-skill-template/references/skill-authoring-conventions.md` "Cost test (비용 자문)" 섹션 참조.
 
 ---
 
 **Gotchas 시드 여부 (template 참조)**
 
-신규 스킬에는 함정이 아직 관측되지 않았으므로 `README.md`의 `## Gotchas` 섹션을 시드하지 않는다. 운영 중 첫 함정 발견 시 그 시점에 추가한다. 정식 컨벤션은 `harness-skill-template.md` "스킬 작성 컨벤션 → Gotchas 섹션 컨벤션" 참조.
+신규 스킬에는 함정이 아직 관측되지 않았으므로 `README.md`의 `## Gotchas` 섹션을 시드하지 않는다. 운영 중 첫 함정 발견 시 그 시점에 추가한다. 정식 컨벤션은 `harness-skill-template/references/skill-authoring-conventions.md` "Gotchas 섹션 컨벤션" 섹션 참조.
 
 ## 생성 후 검증
 

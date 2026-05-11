@@ -26,7 +26,7 @@ Research Context에서 다음을 확인한다:
 
 - `.claude/agents/`: 존재하는 에이전트 정의 패턴 파악
 - `.claude/skills/`: 존재하는 스킬 패턴 파악
-- `harness-skill-template.md`: 현재 표준 템플릿 분석
+- `harness-skill-template.md`: 현재 표준 템플릿 분석 (필요 시 진입점의 모드별 참조 안내표를 따라 `harness-skill-template/references/` 하위를 조건부 로드)
 
 패턴을 유형별로 분류한다: 아키텍처 패턴, 스킬 작성 패턴, 에이전트 협업 패턴.
 
