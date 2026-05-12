@@ -107,3 +107,19 @@ REASON: <실패 원인 (구체적으로)>
 ATTEMPTED: <시도한 접근법>
 BLOCKER: <해결을 위해 필요한 것>
 ```
+
+## Gotchas
+
+본 자산을 호출하거나 본문을 참조할 때 사전에 인지할 운영 함정을 정리한다. 정밀 분석이 필요하면 각 항목 끝의 출처를 따라간다.
+
+- **acceptance 통과를 위한 본문 임의 변경**
+  - 증상: worker가 acceptance 매칭을 통과시키기 위해 본문 강조 범위·구두점·기호·코드 펜스를 임의 수정한다.
+  - 발생 조건: design-spec과 실제 본문 표기가 어긋났을 때 worker가 본문 쪽을 변경하여 정합성을 맞추려고 시도할 때 발생한다.
+  - 회피·완화: 본문 표기와 design-spec 검증식이 어긋날 경우 본문을 변경하지 말고 PM에게 escalate하여 design-spec 또는 검증식을 정정하도록 한다.
+  - 출처: 플랜 010 적용 단계 worker self-verify 보정 기록.
+
+- **design-spec 미합치 시 worker 단독 보정**
+  - 증상: design-spec에 명시되지 않은 본문 표기 차이를 worker가 단독으로 판단하여 보정한다.
+  - 발생 조건: worker가 acceptance 미통과 케이스를 의미 손실 없는 단순 조정으로 정당화할 때 발생한다.
+  - 회피·완화: design-spec 외 표기 변경은 의미 손실 여부와 무관하게 worker 단독 결정 대상이 아니며, 미합치 발견 시 STATUS failed로 보고하고 PM 결정에 위임한다.
+  - 출처: 플랜 009 적용 단계 worker self-verify 보정 기록.
