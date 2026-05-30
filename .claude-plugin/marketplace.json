@@ -1,0 +1,15 @@
+{
+  "name": "harness-collections",
+  "owner": {
+    "name": "hnts03",
+    "url": "https://github.com/hnts03"
+  },
+  "plugins": [
+    {
+      "name": "harness",
+      "source": "./plugins/harness",
+      "description": "하네스 R&D를 즉시 시작하기 위한 통합 번들. /pm으로 PM 오케스트레이션 R&D 세션을 시작하고, 동봉된 sub-agent 7종(project-manager·harness-architect·worker·reviewer·qa·researcher·document-writer)과 harness-family skills 7종(harness·pm·create-agent·create-skill·clean-commit·harness-benchmark·update-from-phase) + 일상 skills 2종(commit·telegram-channel-setup)을 한 번에 install. /harness 메타 스킬은 동봉된 사용자 정의 template(harness-skill-template v0.5.0 + 4 references)을 자동 우선 참조한다. 기존 1.0.x가 메타 스킬 단독 배포였다면 1.1.0은 '메타 스킬 + 실제 운영 중인 reference 하네스 팀'을 묶은 패키지.",
+      "version": "1.1.0"
+    }
+  ]
+}

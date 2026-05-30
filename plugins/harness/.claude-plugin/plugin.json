@@ -1,0 +1,22 @@
+{
+  "name": "harness",
+  "description": "Agent team 하네스 통합 번들. /pm으로 R&D 세션을 시작하면 PM이 7명 sub-agent 팀(project-manager·harness-architect·worker·reviewer·qa·researcher·document-writer)을 오케스트레이션한다. /harness 메타 스킬로 새 도메인 하네스를 설계할 때 동봉된 사용자 정의 template(references/user-template/harness-skill-template.md + 4 references)을 자동 우선 참조. 스킬 9종: harness·pm·create-agent·create-skill·clean-commit·harness-benchmark·update-from-phase + 일상 commit·telegram-channel-setup. '하네스 R&D 세션', 'PM 시작', '에이전트 팀 시작', '새 하네스 설계' 시 사용.",
+  "version": "1.1.0",
+  "author": {
+    "name": "hnts03",
+    "url": "https://github.com/hnts03"
+  },
+  "homepage": "https://github.com/hnts03/harness-collections",
+  "repository": "https://github.com/hnts03/harness-collections",
+  "license": "Apache-2.0",
+  "keywords": [
+    "harness",
+    "agent-team",
+    "skill-architect",
+    "meta-skill",
+    "orchestration",
+    "project-manager",
+    "qa",
+    "reviewer"
+  ]
+}

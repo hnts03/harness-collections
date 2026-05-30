@@ -1,0 +1,1 @@
+../../../collections/harness-framework/.claude/agents/worker.md
