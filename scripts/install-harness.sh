@@ -14,8 +14,18 @@
 #
 # 구조:
 #   harness-collections/worktrees/<project-name>/  ← worktree (<project-name> 브랜치)
-#   <project>/.claude/skills/<skill>  →  worktrees/<project-name>/claude-skills/<skill>/
-#   <project>/.claude/agents/<agent>.md  →  worktrees/<project-name>/claude-agents/<agent>/AGENT.md
+#
+# Skills (총 9개):
+#   <project>/.claude/skills/<utility>  →  worktrees/<project-name>/claude-skills/<utility>/
+#     (root SoT — commit, telegram-channel-setup 등 편의 스킬)
+#   <project>/.claude/skills/<harness>  →  worktrees/<project-name>/collections/harness-framework/.claude/skills/<harness>/
+#     (collections SoT — harness family: harness, pm, create-agent, create-skill, clean-commit, harness-benchmark, update-from-phase)
+#
+# Agents (총 7개, 단일 .md 파일):
+#   <project>/.claude/agents/<agent>.md  →  worktrees/<project-name>/collections/harness-framework/.claude/agents/<agent>.md
+#     (project-manager, harness-architect, worker, reviewer, qa, researcher, document-writer)
+#
+# Plugin install 방식이 더 단순한 다중 머신 배포 경로다 — README.md 참조.
 
 set -euo pipefail
 
@@ -129,12 +139,24 @@ echo -e "${BOLD}Skills${RESET}"
 $DRY_RUN || mkdir -p "$TARGET_DIR/.claude/skills"
 
 skill_count=0
+# (1) root SoT — utility skills (commit, telegram-channel-setup)
 for skill_dir in "$HARNESS_ROOT/claude-skills"/*/; do
   [ -f "$skill_dir/SKILL.md" ] || continue
   skill_name="$(basename "$skill_dir")"
   make_link "$LINK_SOURCE/claude-skills/$skill_name" "$TARGET_DIR/.claude/skills/$skill_name"
   (( skill_count++ )) || true
 done
+# (2) collections SoT — harness family (harness, pm, create-agent, ...)
+HARNESS_SKILLS="$HARNESS_ROOT/collections/harness-framework/.claude/skills"
+if [ -d "$HARNESS_SKILLS" ]; then
+  for skill_dir in "$HARNESS_SKILLS"/*/; do
+    [ -f "$skill_dir/SKILL.md" ] || continue
+    skill_name="$(basename "$skill_dir")"
+    make_link "$LINK_SOURCE/collections/harness-framework/.claude/skills/$skill_name" \
+              "$TARGET_DIR/.claude/skills/$skill_name"
+    (( skill_count++ )) || true
+  done
+fi
 echo ""
 
 # ── Agents 설치 ───────────────────────────────────────────────────────────────
@@ -142,14 +164,17 @@ echo -e "${BOLD}Agents${RESET}"
 $DRY_RUN || mkdir -p "$TARGET_DIR/.claude/agents"
 
 agent_count=0
-for agent_dir in "$HARNESS_ROOT/claude-agents"/*/; do
-  agent_dir="${agent_dir%/}"
-  agent_name="$(basename "$agent_dir")"
-  [ -f "$agent_dir/AGENT.md" ] || continue
-  make_link "$LINK_SOURCE/claude-agents/$agent_name/AGENT.md" \
-            "$TARGET_DIR/.claude/agents/$agent_name.md"
-  (( agent_count++ )) || true
-done
+# collections SoT — 단일 .md 파일들 (project-manager.md, harness-architect.md, ...)
+HARNESS_AGENTS="$HARNESS_ROOT/collections/harness-framework/.claude/agents"
+if [ -d "$HARNESS_AGENTS" ]; then
+  for agent_file in "$HARNESS_AGENTS"/*.md; do
+    [ -f "$agent_file" ] || continue
+    agent_name="$(basename "$agent_file" .md)"
+    make_link "$LINK_SOURCE/collections/harness-framework/.claude/agents/$agent_name.md" \
+              "$TARGET_DIR/.claude/agents/$agent_name.md"
+    (( agent_count++ )) || true
+  done
+fi
 echo ""
 
 # ── .gitignore 업데이트 ───────────────────────────────────────────────────────
