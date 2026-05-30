@@ -4,20 +4,56 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a collection of reusable Claude Code harness assets: skills, techniques, and prompt collections. The primary goal is to produce drop-in `.claude/skills/` directories that users can copy into any project and use immediately.
+This repository is both a **Claude Code plugin marketplace** and a **source-of-truth (SoT) collection** of reusable harness assets — skills, agents, the harness R&D framework, and the user-template that drives `/harness`. The same content is exposed two ways:
+
+1. **Plugin marketplace** (primary, multi-machine): `/plugin marketplace add hnts03/harness-collections` → `/plugin install harness@harness-collections`. Bundles `/pm`, `/harness`, 5 harness-family helper skills, 2 utility skills, and 7 sub-agents.
+2. **Worktree-symlink install** (secondary, local-dev): `scripts/install-harness.sh` creates a per-project git worktree and symlinks the same 9 skills + 7 agents into that project's `.claude/`. Use this when you want to customize the harness per project on a dedicated branch.
+
+The R&D framework's own operating principles live in `collections/harness-framework/CLAUDE.md` — that is the working environment for evolving the reference team.
 
 ## Directory Structure
 
-- `claude-skills/` — Claude skill definitions. Treat this directory as the equivalent of `.claude/skills/`. Each subdirectory is a standalone skill.
-- `claude-agents/` — Claude agent definitions. Each subdirectory is a standalone agent with a defined role, responsibilities, and prompt.
-- `collections/` — Curated bundles of related skills or configurations for specific use cases.
-- `scripts/` — Standalone scripts and patterns for Claude automation (e.g., session keep-alive loops).
+- `.claude-plugin/marketplace.json` — Marketplace manifest. Declares the `harness` plugin and its source path.
+- `plugins/harness/` — **Plugin view layer**. Contains `.claude-plugin/plugin.json` and symlinks into the SoT locations. **Do not edit content here** — edit the SoT and the symlinks reflect the change.
+- `claude-skills/` — **SoT for utility skills** (`commit`, `telegram-channel-setup`). Each subdirectory holds `SKILL.md` + `README.md`.
+- `claude-agents/` — Reserved for future utility agents (currently empty). Agents needed by `/pm` live in `collections/harness-framework/.claude/agents/`.
+- `collections/harness-framework/` — **The actively developed R&D harness.** Contains `.claude/skills/`, `.claude/agents/`, `harness-skill-template.md`, session-history docs, and its own `CLAUDE.md` with operating principles.
+- `scripts/` — `install-harness.sh`, `sync-user-template.sh`, etc.
 
-## Agent Authoring Convention
+## SoT ↔ Plugin View Layer
 
-각 agent는 `claude-agents/` 하위의 독립 디렉토리에 위치한다. Agent 디렉토리에는 반드시 `AGENT.md` 파일이 있어야 한다.
+| Asset class | SoT location | Plugin view |
+|---|---|---|
+| Harness-family skills (7) | `collections/harness-framework/.claude/skills/<name>/SKILL.md` | `plugins/harness/skills/<name>` — directory symlink |
+| Sub-agents (7) | `collections/harness-framework/.claude/agents/<name>.md` (single .md) | `plugins/harness/agents/<name>.md` — file symlink |
+| Utility skills (2) | `claude-skills/<name>/SKILL.md` | `plugins/harness/skills/<name>` — directory symlink |
+| user-template (1 + 4 refs) | `collections/harness-framework/harness-skill-template.md` + `harness-skill-template/references/*.md` | Copy in `collections/harness-framework/.claude/skills/harness/references/user-template/` — sync via `scripts/sync-user-template.sh` |
 
-`AGENT.md`는 Claude Code의 `Agent` tool에 `prompt` 파라미터로 전달되는 실행 프롬프트다. 다음 형식을 따른다:
+The user-template is **copied, not symlinked**, because plugin install only ships files under the plugin source path. The symlink target outside that path would resolve to nothing on a freshly installed machine. The sync script keeps the two in step; run it (or its `--check` form in CI) whenever the SoT changes.
+
+## Authoring Conventions
+
+### Adding a new harness-family skill or agent
+
+1. Author the file in `collections/harness-framework/.claude/{skills|agents}/` following that framework's `CLAUDE.md` and `harness-skill-template.md`.
+2. Add the view-layer symlink:
+   ```bash
+   ln -sf ../../../collections/harness-framework/.claude/skills/<name>   plugins/harness/skills/<name>
+   # or, for an agent:
+   ln -sf ../../../collections/harness-framework/.claude/agents/<name>.md plugins/harness/agents/<name>.md
+   ```
+3. Bump version (see "Versioning" below).
+4. Run `/harness-benchmark` if a `description` field was added or modified (required by `harness-skill-template/references/skill-authoring-conventions.md`).
+
+### Adding a new utility skill
+
+1. Author `claude-skills/<name>/{SKILL.md, README.md}`. README must include 사용법 + 설계 결정 sections.
+2. Add the symlink: `ln -sf ../../../claude-skills/<name> plugins/harness/skills/<name>`
+3. Bump version.
+
+### Agent file format
+
+Sub-agents under `collections/harness-framework/.claude/agents/` are **single `.md` files** with frontmatter:
 
 ```markdown
 ---
@@ -28,52 +64,26 @@ description: 이 에이전트가 하는 일 한 줄 설명
 <agent prompt content>
 ```
 
-**Agent 프롬프트 작성 원칙:**
-- 에이전트가 수행할 STEP을 번호 순서로 명확히 나열한다.
-- 입력(Context 블록)과 출력(반환 형식)을 명시한다.
-- 에이전트가 스스로 판단해야 하는 경우와 caller에게 위임해야 하는 경우를 구분한다.
-- 실패 시 스스로 재시도하지 않고 실패 결과를 반환하는 원칙을 지킨다 (Worker 등).
+This is the Claude Code plugin standard. Agents authored as directories with `AGENT.md` (older convention) are not supported in the plugin view layer — convert to single-file form first.
 
-Agent를 호출하는 상위 에이전트(PM, Architect 등)는 `Agent` tool을 사용할 때 다음 방식으로 프롬프트를 구성한다:
-1. `cat .claude/agents/{name}/AGENT.md`로 에이전트 프롬프트를 로드한다.
-2. 로드한 프롬프트 뒤에 Context 블록(실행 컨텍스트)을 추가한다.
-3. 합쳐진 내용을 Agent tool의 `prompt` 파라미터로 전달한다.
+## Versioning
 
-배포 경로: `claude-agents/{name}/` → `.claude/agents/{name}/`
+Bump `plugins/harness/.claude-plugin/plugin.json` `version` **AND** `.claude-plugin/marketplace.json` plugin entry `version` together — they must match for `/plugin update` to detect a new release on other machines.
 
-## Skill Authoring Convention
+- **patch** (1.1.x) — bugfix in a skill/agent body, no API surface change
+- **minor** (1.x.0) — new skill or agent added, or material content rewrite
+- **major** (x.0.0) — directory layout change, plugin rename, breaking invocation change
 
-Each skill lives in its own subdirectory under `claude-skills/`. A skill directory must contain:
-
-1. **`SKILL.md`** — The skill prompt file (the actual entrypoint Claude reads when the skill is invoked). The filename is always `SKILL.md` — the directory name determines the `/skill-name` command.
-2. **`README.md`** — Must include two sections:
-   - **사용법 (Usage)**: How to install the skill (copy path) and invoke it (`/skill-name`), the step-by-step flow showing which steps are automatic vs. require user input, and how to use it after setup is complete.
-   - **설계 결정 (Design decisions)**: Why the prompt is structured this way, what problem it solves, and any non-obvious implementation choices.
-
-A skill directory should be fully self-contained so that copying it into a project's `.claude/skills/` makes it immediately usable with no additional setup.
-
-### Skill Prompt File Format
-
-`SKILL.md` must follow the Claude Code skill schema:
-
-```markdown
----
-name: skill-name
-description: One-line description shown in skill picker
----
-
-<skill prompt content>
-```
-
-The `description` field is what surfaces in `/` command listings, so make it action-oriented and specific.
+A `description` field change always requires a benchmark (`/harness-benchmark`) regardless of version bump size.
 
 ## Git Workflow
 
-커밋할 때는 반드시 `/commit` 스킬을 사용하세요. 직접 `git commit` 명령어를 실행하지 마세요.
+커밋할 때는 반드시 `/commit` 스킬(루트 utility) 또는 `/clean-commit`(harness 자산 변경 시)을 사용하세요. 직접 `git commit` 명령어를 실행하지 마세요.
 
 ## Role Context
 
-When creating skills in this repo, operate as a senior harness engineering expert. Skills should:
-- Be opinionated and production-ready, not generic templates
-- Encode hard-won patterns (e.g., hook configuration, permission scoping, multi-step orchestration)
-- Include README.md rationale so future maintainers understand *why*, not just *what*
+When evolving this repository:
+- Author skills and agents in their SoT location; let the plugin view layer be derived.
+- Prefer editing existing assets over creating new ones (cost test: "Without this new file, would something fail?").
+- Keep `description` fields specific and trigger-explicit — see `collections/harness-framework/harness-skill-template/references/skill-authoring-conventions.md`.
+- For changes to the R&D framework itself, follow the principles in `collections/harness-framework/CLAUDE.md` — particularly: no unauthorized direction-setting, no opaque codenames, restrict "phase" terminology in user-facing reports.

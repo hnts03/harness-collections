@@ -1,160 +1,142 @@
 # harness-collections
 
-Reusable Claude Code harness assets — skills, agents, and prompt collections.  
-Each asset is designed to be dropped into any project and used immediately with no additional setup.
+A **Claude Code plugin marketplace** that bundles the harness R&D framework — `/pm` (PM orchestration), `/harness` (meta-skill with the user-template auto-loaded), six harness-family skills, two utility skills, and the seven sub-agents that PM spawns — all installable on any machine with one command.
 
-## Directory Structure
-
-```
-harness-collections/
-├── claude-skills/       # Drop-in skill definitions (.claude/skills/)
-├── claude-agents/       # Agent prompt definitions (.claude/agents/)
-├── collections/         # Curated references and external resource bundles
-└── scripts/             # Standalone scripts and automation patterns
-```
-
-## Skills
-
-Install any skill by copying its directory into your project's `.claude/skills/`:
+## Quick install (any machine)
 
 ```bash
-cp -r claude-skills/<skill-name> /your/project/.claude/skills/
+# In Claude Code
+/plugin marketplace add hnts03/harness-collections
+/plugin install harness@harness-collections
 ```
 
-Then invoke it in Claude Code with `/<skill-name>`.
+To update later: `/plugin update harness@harness-collections`.
 
-### Available Skills
+## What's in the `harness` plugin
+
+### Skills (9)
 
 | Skill | Description | Invoke |
 |-------|-------------|--------|
-| [commit](claude-skills/commit/) | Run style checks, fix issues, and commit without AI co-author attribution | `/commit` |
-| [project-manager](claude-skills/project-manager/) | Dev-PM — refine requirements, generate an atomic task plan, and orchestrate sub-agents end-to-end | `/project-manager` |
-| [telegram-channel-setup](claude-skills/telegram-channel-setup/) | Automate end-to-end Telegram bot ↔ Claude Code channels integration | `/telegram-channel-setup` |
+| [pm](collections/harness-framework/.claude/skills/pm/) | Start a harness R&D session — spawns the PM agent which orchestrates the rest of the team | `/pm` |
+| [harness](collections/harness-framework/.claude/skills/harness/) | **Meta-skill.** Design a new harness from scratch. Auto-loads `references/user-template/harness-skill-template.md` first | `/harness` |
+| [create-agent](collections/harness-framework/.claude/skills/create-agent/) | Author a new agent definition file | `/create-agent` |
+| [create-skill](collections/harness-framework/.claude/skills/create-skill/) | Author a new skill (with trigger matrix) | `/create-skill` |
+| [harness-benchmark](collections/harness-framework/.claude/skills/harness-benchmark/) | Trigger accuracy + with/without A/B benchmark; mandatory after editing a `description` field | `/harness-benchmark` |
+| [clean-commit](collections/harness-framework/.claude/skills/clean-commit/) | Commit harness files without co-author attribution; with DCO Signed-off-by | `/clean-commit` |
+| [update-from-phase](collections/harness-framework/.claude/skills/update-from-phase/) | Phase completion bundling: dev-plan update + CLAUDE.md + memory + commit & push | `/update-from-phase` |
+| [commit](claude-skills/commit/) | General-purpose commit (style checks + co-author removal) | `/commit` |
+| [telegram-channel-setup](claude-skills/telegram-channel-setup/) | Telegram bot ↔ Claude Code channels end-to-end setup | `/telegram-channel-setup` |
 
-## Agents
+### Sub-agents (7)
 
-Agents are prompt definitions consumed by the Claude Code `Agent` tool. They are not invoked directly by the user — a parent skill or agent spawns them at runtime.
+Spawned by `/pm` — not invoked directly by users.
 
-Install by copying into your project's `.claude/agents/`:
+| Agent | Model | Role |
+|-------|-------|------|
+| [project-manager](collections/harness-framework/.claude/agents/project-manager.md) | opus | Resume detection → plan → orchestration |
+| [harness-architect](collections/harness-framework/.claude/agents/harness-architect.md) | opus | Pattern/technique design from researcher's output |
+| [researcher](collections/harness-framework/.claude/agents/researcher.md) | opus | Deep investigation of relevant patterns/techniques |
+| [reviewer](collections/harness-framework/.claude/agents/reviewer.md) | opus | Quality review of artifacts |
+| [qa](collections/harness-framework/.claude/agents/qa.md) | opus | Phase-level verification |
+| [worker](collections/harness-framework/.claude/agents/worker.md) | sonnet | Atomic-task implementation |
+| [document-writer](collections/harness-framework/.claude/agents/document-writer.md) | sonnet | Final documentation |
 
-```bash
-cp -r claude-agents/<agent-name> /your/project/.claude/agents/
-```
+### What changed in 1.1.0 (vs 1.0.x)
 
-### Available Agents
+| 1.0.x (`harness-marketplace`) | 1.1.0 (`harness-collections`) |
+|---|---|
+| `/harness` meta-skill only — you had to design every agent and skill from scratch | `/harness` **+ the actually running reference harness team**: `/pm` orchestration skill, 7 sub-agents, and 5 harness-family helper skills (`create-agent`, `create-skill`, `harness-benchmark`, `clean-commit`, `update-from-phase`) |
+| Meta-skill referenced no user template | `/harness` auto-loads `references/user-template/harness-skill-template.md` (v0.5.0) — your team-building principles, PM behavior, and skill-authoring conventions take precedence over the generic workflow |
+| Separate repos for marketplace and other assets | One repo, one marketplace, one plugin. Daily utility skills (`commit`, `telegram-channel-setup`) ship in the same bundle. |
 
-| Agent | Description | Spawned by |
-|-------|-------------|------------|
-| [worker](claude-agents/worker/) | Executes a single atomic task; reports what/how/why on failure | PM |
-| [reviewer](claude-agents/reviewer/) | Critically reviews group implementation; returns `OK` or `REWORK` with a quality score | PM |
-| [qa](claude-agents/qa/) | Plans and runs integration tests after all groups complete; writes `qa-report.md` | PM |
-| [tech-writer](claude-agents/tech-writer/) | Consolidates all artifacts into `final-report.md` | PM |
-
-### Project Manager Agent Architecture
-
-The `project-manager` skill drives a layered multi-agent system:
-
-```
-/project-manager (skill)
-└── PM  ←─ orchestrates everything directly (flat, per Claude Code sub-agent constraints)
-    ├── Worker × N  (atomic tasks per group, parallel where possible)
-    ├── Reviewer    (per group, OK / REWORK + quality score, up to 5 rounds)
-    ├── QA
-    └── TechWriter
-```
-
-**Orchestration model:** PM manages state via `project-plan.md` (file-based, persistent). Workers, Reviewer, QA, and TechWriter are leaf sub-agents spawned directly by PM via the `Agent` tool. Sub-agents cannot spawn other sub-agents per Claude Code constraints.
-
-See [claude-agents/project-manager/SPEC.md](claude-agents/project-manager/SPEC.md) for the full architecture spec.
-
-## Installation
-
-### Recommended: worktree-based install
-
-`install-harness.sh` creates a dedicated git branch and worktree for each project, then symlinks your `.claude/` to that worktree. This lets you customize the harness per project while still pulling upstream changes from `main`.
-
-```bash
-# Clone harness-collections once
-git clone https://github.com/hnts03/harness-collections
-
-# From your project root
-bash /path/to/harness-collections/scripts/install-harness.sh
-
-# Also patch .gitignore automatically
-bash /path/to/harness-collections/scripts/install-harness.sh --gitignore
-
-# Preview without making changes
-bash /path/to/harness-collections/scripts/install-harness.sh --dry-run
-
-# Overwrite existing symlinks
-bash /path/to/harness-collections/scripts/install-harness.sh --force
-```
-
-What happens under the hood:
-
-1. Creates a branch named after your project (`<project-name>`)
-2. Checks it out as a worktree at `harness-collections/worktrees/<project-name>/`
-3. Creates symlinks in your project's `.claude/` pointing to that worktree
+## Repository layout
 
 ```
 harness-collections/
-└── worktrees/
-    └── my-project/           ← git worktree (branch: my-project)
-        ├── claude-skills/
-        └── claude-agents/
-
-my-project/.claude/
-├── skills/
-│   ├── commit            ->  worktrees/my-project/claude-skills/commit/
-│   ├── project-manager   ->  worktrees/my-project/claude-skills/project-manager/
-│   └── ...
-└── agents/
-    ├── worker.md         ->  worktrees/my-project/claude-agents/worker/AGENT.md
-    ├── reviewer.md       ->  ...
-    └── ...
+├── .claude-plugin/
+│   └── marketplace.json                            # marketplace manifest
+├── plugins/
+│   └── harness/                                    # plugin view layer (all symlinks → SoT)
+│       ├── .claude-plugin/plugin.json
+│       ├── skills/<name>                           # → SoT (collections/.../skills/<name> or claude-skills/<name>)
+│       └── agents/<name>.md                        # → collections/harness-framework/.claude/agents/<name>.md
+├── claude-skills/                                  # SoT for utility skills (commit, telegram-channel-setup)
+├── claude-agents/                                  # reserved for future utility agents (currently empty)
+├── collections/
+│   └── harness-framework/                          # the actively developed R&D harness
+│       ├── .claude/
+│       │   ├── skills/                             # SoT for harness-family skills (7)
+│       │   │   └── harness/references/user-template/  # synced from harness-skill-template.md
+│       │   └── agents/                             # SoT for harness sub-agents (7)
+│       ├── harness-skill-template.md               # user-template SoT (v0.5.0)
+│       ├── harness-skill-template/references/      # 4 progressive-disclosure references
+│       ├── CLAUDE.md                               # operational principles
+│       └── docs/phase_NNN/                         # session history
+└── scripts/
+    ├── install-harness.sh                          # worktree+symlink install (local dev)
+    ├── sync-user-template.sh                       # rsync harness-skill-template → /harness references
+    ├── auto-refresher.sh
+    └── configure-attribution.sh
 ```
 
-**Customize per project** — edit files inside `worktrees/<project-name>/` on the project branch.
+### Source-of-truth ↔ plugin view layer
 
-**Pull upstream updates** — merge `main` into your project branch when ready:
+| Asset | SoT location | Plugin view |
+|---|---|---|
+| Harness-family skills (7) | `collections/harness-framework/.claude/skills/<name>/SKILL.md` | `plugins/harness/skills/<name>` → symlink |
+| Sub-agents (7) | `collections/harness-framework/.claude/agents/<name>.md` (single .md) | `plugins/harness/agents/<name>.md` → symlink |
+| Utility skills (2) | `claude-skills/<name>/SKILL.md` | `plugins/harness/skills/<name>` → symlink |
+| user-template | `collections/harness-framework/harness-skill-template.md` (+ `harness-skill-template/references/`) | Copy under `collections/.../skills/harness/references/user-template/` — keep synced via `scripts/sync-user-template.sh` |
+
+**Adding a new global skill**:
+```bash
+# 1. Author SKILL.md (utility → claude-skills/<name>/; harness-family → collections/harness-framework/.claude/skills/<name>/)
+# 2. Add the view-layer symlink:
+ln -sf ../../../claude-skills/<name> plugins/harness/skills/<name>
+#    or for harness-family:
+ln -sf ../../../collections/harness-framework/.claude/skills/<name> plugins/harness/skills/<name>
+# 3. Bump version in plugins/harness/.claude-plugin/plugin.json and .claude-plugin/marketplace.json
+```
+
+**After editing `collections/harness-framework/harness-skill-template.md`**:
+```bash
+bash scripts/sync-user-template.sh           # update the copy
+bash scripts/sync-user-template.sh --check   # CI: fail if drifted
+```
+
+## Alternative install: worktree + symlink (local dev)
+
+For when you want a **per-project git branch** to customize harness assets and selectively pull upstream updates. Plugin install (above) is recommended for everything else.
 
 ```bash
-cd /path/to/harness-collections/worktrees/<project-name>
-git merge main
+git clone https://github.com/hnts03/harness-collections
+bash /path/to/harness-collections/scripts/install-harness.sh           # from your project root
+bash /path/to/harness-collections/scripts/install-harness.sh --gitignore
+bash /path/to/harness-collections/scripts/install-harness.sh --dry-run
+bash /path/to/harness-collections/scripts/install-harness.sh --force
 ```
 
-### Alternative: copy individual assets
+What happens:
 
-```bash
-# Single skill
-cp -r claude-skills/<skill-name> /your/project/.claude/skills/
+1. Creates a git branch named `<project-name>` and a worktree at `harness-collections/worktrees/<project-name>/`.
+2. Symlinks 9 skills and 7 agents into your project's `.claude/skills/` and `.claude/agents/`.
 
-# Single agent
-cp claude-agents/<agent-name>/AGENT.md /your/project/.claude/agents/<agent-name>.md
-```
+Customize on the project branch; merge `main` when you want upstream changes.
 
 ## Scripts
 
-Standalone scripts for Claude automation patterns.
-
 | Script | Description |
 |--------|-------------|
-| [install-harness.sh](scripts/install-harness.sh) | Create a per-project branch + git worktree and symlink skills/agents into `.claude/` (`--force`, `--dry-run`, `--gitignore`) |
-| [auto-refresher.sh](scripts/auto-refresher.sh) | Keep-alive loop that refreshes Claude sessions every 5 hours |
+| [install-harness.sh](scripts/install-harness.sh) | Per-project worktree + symlink install (`--force`, `--dry-run`, `--gitignore`) |
+| [sync-user-template.sh](scripts/sync-user-template.sh) | Sync `harness-skill-template.md` SoT into the plugin copy (`--check` for CI) |
+| [auto-refresher.sh](scripts/auto-refresher.sh) | Keep-alive loop refreshing Claude sessions every 5 hours |
 | [configure-attribution.sh](scripts/configure-attribution.sh) | Patch Claude co-author attribution strings at user or project scope |
-
-## Collections
-
-Curated references and external resource bundles by domain.
-
-| Collection | Description |
-|------------|-------------|
-| [harness-framework](collections/harness-framework/) | Comparison of deployed harness frameworks (paperclip, gitagent, harness) |
-| [skills](collections/skills/) | References to externally authored skill collections (harness-100, etc.) |
 
 ## Conventions
 
-- Each skill directory contains `SKILL.md` (entrypoint prompt) and `README.md` (usage + design decisions).
-- Each agent directory contains `AGENT.md` (prompt passed to the `Agent` tool).
-- `SKILL.md` / `AGENT.md` frontmatter: `name` (identifier), `description` (shown in `/` picker).
-- See [CLAUDE.md](CLAUDE.md) for full authoring guidelines.
+- Skills under `claude-skills/`: `<name>/{SKILL.md, README.md}` (utility skills).
+- Skills under `collections/harness-framework/.claude/skills/`: `<name>/SKILL.md` (harness-family).
+- Agents: single `.md` file with frontmatter (`collections/harness-framework/.claude/agents/<name>.md`).
+- See [CLAUDE.md](CLAUDE.md) for the full SoT ↔ plugin view layer rules and versioning.
+- The R&D framework's own operating principles live in [`collections/harness-framework/CLAUDE.md`](collections/harness-framework/CLAUDE.md).
